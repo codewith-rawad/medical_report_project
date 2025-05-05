@@ -32,15 +32,15 @@
   }
 
   .two{
-background-color: #0a9396;
+background-color: #005f73;
 position: absolute;
-width: 80%;
+width: 70%;
 height: auto;
 display: flex;
 justify-content: space-evenly;
 height: 300px;
 top: 44%;
-left: 10%;
+left: 15%;
 border-radius: 30px;
 
   }
@@ -50,27 +50,49 @@ width: 300px
   }
   
   span {
-    width: 40%;
+    width: 55%;
     font-size: 1.1rem;
     color: #e0f7fa;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
     line-height: 1.8;
     animation: fadeIn 1.4s ease-in;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    top: 30px;
+    position: relative;
   }
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
   }
   .robot {
+    position: relative;
     border-radius: 50%;
     width: 280px;
     height: 280px;
     object-fit: cover;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     transition: transform 0.4s ease;
+    top: 10px;
+    animation: mover 2s  infinite;
   }
   
   .robot:hover {
     transform: rotate(2deg) scale(1.02);
+  }
+
+  @keyframes mover {
+   0%{
+    rotate: 0deg;
+    scale: 1;
+   }
+   50%{
+  rotate: 2deg;
+  scale: 1.02;
+   }
+   100%{
+    rotate: 0deg;
+    scale: 1;
+   }
+    
   }
   

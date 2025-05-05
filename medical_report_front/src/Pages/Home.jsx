@@ -9,7 +9,7 @@ import Back2 from '../assets/background2.jpg';
 import Back3 from '../assets/background3.jpg';
 import robot from "../assets/robot.webp"
 const Home = () => {
-    const images=[Back1,Back2,Back3]
+    const images=[Back1,Back2]
   const [showLogin, setShowLogin] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
 
