@@ -1,0 +1,126 @@
+.signup-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .signup-form {
+    background: linear-gradient(145deg, #ffffff, #e0f7fa);
+    padding: 2.5rem;
+    border-radius: 20px;
+    width: 360px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: scaleIn 0.4s ease;
+    text-align: center;
+  }
+  
+  @keyframes scaleIn {
+    from {
+      transform: scale(0.85);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  
+  .signup-form h2 {
+    margin-bottom: 1.5rem;
+    color: #005f73;
+    font-size: 1.8rem;
+    font-weight: bold;
+  }
+  
+  .signup-form input {
+    width: 100%;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: border 0.3s, box-shadow 0.3s;
+  }
+  
+  .signup-form input:focus {
+    border-color: #0a9396;
+    box-shadow: 0 0 6px #0a9396;
+    outline: none;
+  }
+  
+  .signup-form button {
+    width: 100%;
+    padding: 0.75rem;
+    /* background-color: #005f73; */
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  /* .signup-form button:nth-child(2):hover {
+    background-color: #0a9396;
+    transition: all 0.3s ease;
+    
+  } */
+  
+  .signup-form .close-btn {
+    background-color: transparent;
+    color: #555;
+    font-size: 0.9rem;
+    border: none;
+    margin-top: 1rem;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    transition: all 0.3s ease;
+  }
+  
+  .signup-form .close-btn:hover {
+    color: #222;
+  }
+  .signup-form .close-btn {
+    background-color: #ccc;
+  }
+  
+  @keyframes scaleout {
+    from {
+      transform: scale(1);
+      opacity: 1;
+    }
+    to {
+      transform: scale(0.85);
+      opacity: 0;
+    }
+  }
+  
+  .remove {
+    animation: scaleout 0.4s ease;
+  }
+  
+  .modal-btn:hover {
+   
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  button[type="submit"]{
+
+transition: all 0.3s ease;
+
+
+
+  }

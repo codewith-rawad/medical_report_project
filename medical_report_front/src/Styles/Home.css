@@ -1,0 +1,18 @@
+.home-container {
+    padding: 3rem;
+    text-align: center;
+  }
+
+  .all{
+    height: 100vh;
+  position: relative;
+  width: 100vw;
+  
+  color:white;
+
+  }
+
+  h1{
+    font-size: 40px;
+  }
+  
