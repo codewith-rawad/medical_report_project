@@ -2,7 +2,7 @@ import React from 'react';
 import '../Styles/Navbar.css';
 import logo from "../assets/logo.png";
 
-const Navbar = ({ onLoginClick, onSignupClick }) => {
+const Navbar = ({ onLoginClick, onSignupClick, isAuthenticated, onLogout }) => {
   return (
     <nav className="navbar">
       <div className="logo">
@@ -13,8 +13,16 @@ const Navbar = ({ onLoginClick, onSignupClick }) => {
         <li><a href="#about">About</a></li>
         <li><a href="#gallery">Gallery</a></li>
         <li><a href="#contact">Contact</a></li>
-        <li><button onClick={onLoginClick}>Login</button></li>
-        <li><button onClick={onSignupClick}>Sign Up</button></li>
+        {isAuthenticated ? (
+          <>
+            <li><button onClick={onLogout}>Logout</button></li>
+          </>
+        ) : (
+          <>
+            <li><button onClick={onLoginClick}>Login</button></li>
+            <li><button onClick={onSignupClick}>Sign Up</button></li>
+          </>
+        )}
       </ul>
     </nav>
   );
