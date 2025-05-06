@@ -1,15 +1,18 @@
-// UserProfile.js
+
 import React from 'react';
+import '../Styles/Dashboard.css';
 
 const UserProfile = () => {
-  const user = JSON.parse(localStorage.getItem('user') || '{}'); // استرجاع بيانات المستخدم من الـ localStorage
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
 
   return (
-    <div>
-      <h1>Welcome {user.name}</h1>
-      <p>Email: {user.email}</p>
-      <p>Role: {user.role}</p>
-      <img src={user.profilePic} alt="Profile" />
+    <div className="page-container">
+      <h1 className="page-header">Welcome, {user.name}</h1>
+      <div className="user-list">
+        <p>Email: {user.email}</p>
+        <p>Role: {user.role}</p>
+        <img className="profile-pic" src={user.profilePic} alt="Profile" />
+      </div>
     </div>
   );
 };
