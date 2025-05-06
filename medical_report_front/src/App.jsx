@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';  
 import Home from '../src/Pages/Home';
 import UserProfile from '../src/Pages/UserProfile';
 import AdminPage from '../src/Pages/Admin';
@@ -53,6 +53,7 @@ function App() {
         isAuthenticated={isAuthenticated} 
         onLogout={onLogout}
         onLoginClick={() => setShowLogin(true)}
+        userRole={userRole}  
       />
       
       {showLogin && (
@@ -84,7 +85,7 @@ function App() {
             )
           }
         />
-        {/* أي مسار غير معروف */}
+ 
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>

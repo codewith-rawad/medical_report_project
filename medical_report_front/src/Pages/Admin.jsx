@@ -1,8 +1,8 @@
-// AdminPage.js
+
 import React from 'react';
 
 const AdminPage = () => {
-  const users = []; // يمكن هنا جلب جميع المستخدمين من السيرفر وعرضهم
+  const users = []; 
 
   return (
     <div>

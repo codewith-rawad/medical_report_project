@@ -17,10 +17,9 @@ def register():
     if not data.get('email') or not data.get('password') or not data.get('name'):
         return jsonify({"message": "Email, name, and password are required"}), 400
 
-    # افتراضيًا user، ما لم يُرسل role=admin
-    role = data.get('role', 'user')
 
-    # التحقق إن كان المستخدم مسجل مسبقًا
+    role = data.get('role', 'admin')
+
     if User.find_by_email(data['email']):
         return jsonify({"message": "User already exists"}), 400
 

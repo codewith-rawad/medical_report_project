@@ -1,9 +1,9 @@
 import React from 'react';
-import { Link } from 'react-router-dom'; // استخدام Link للتوجيه
+import { Link } from 'react-router-dom'; 
 import '../Styles/Navbar.css';
 import logo from "../assets/logo.png";
 
-const Navbar = ({ onLoginClick, onSignupClick, isAuthenticated, onLogout }) => {
+const Navbar = ({ onLoginClick, onSignupClick, isAuthenticated, onLogout, userRole }) => {
   return (
     <nav className="navbar">
       <div className="logo">
@@ -16,8 +16,13 @@ const Navbar = ({ onLoginClick, onSignupClick, isAuthenticated, onLogout }) => {
         <li><a href="#contact">Contact</a></li>
         {isAuthenticated ? (
           <>
+           
+            <li>
+              <Link to={userRole === 'admin' ? "/admin" : "/user-profile"}>
+                Profile
+              </Link>
+            </li>
             <li><button onClick={onLogout}>Logout</button></li>
-            <li><Link to="/user-profile">Profile</Link></li>
           </>
         ) : (
           <>
