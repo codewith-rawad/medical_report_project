@@ -1,11 +1,11 @@
 from app import mongo
 
 class User:
-    def __init__(self, name, email, password):
+    def __init__(self, name, email, password, role="user"): 
         self.name = name
         self.email = email
         self.password = password
-
+        self.role = role  
     def save(self):
         user_collection = mongo.db.users
         user_collection.insert_one(self.__dict__)
