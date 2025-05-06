@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import {jwtDecode} from 'jwt-decode';  
+import { jwtDecode } from 'jwt-decode';
 import Home from '../src/Pages/Home';
 import UserProfile from '../src/Pages/UserProfile';
 import AdminPage from '../src/Pages/Admin';
 import LoginModal from '../src/Components/LoginModal';
 import Navbar from '../src/Components/Navbar';
+import SignUp from './Components/Signup';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState('');  
   const [tokenExpiration, setTokenExpiration] = useState(null);  
   const [showLogin, setShowLogin] = useState(false);
+  const [showSignup, setShowSignup] = useState(false); 
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -47,12 +49,17 @@ function App() {
     setTokenExpiration(null);
   };
 
+  const onSignupClick = () => {
+    setShowSignup(true); 
+  };
+
   return (
     <Router>
       <Navbar 
         isAuthenticated={isAuthenticated} 
         onLogout={onLogout}
         onLoginClick={() => setShowLogin(true)}
+        onSignupClick={onSignupClick}  
         userRole={userRole}  
       />
       
@@ -62,6 +69,13 @@ function App() {
           onClose={() => setShowLogin(false)}
         />
       )}
+      {showSignup && (
+        <SignUp
+        
+          onClose={() => setShowSignup(false)}
+        />
+      )}
+
 
       <Routes>
         <Route path="/" element={<Home />} />
