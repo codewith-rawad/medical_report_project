@@ -14,6 +14,7 @@ def create_app():
     CORS(app) 
   
     app.config["MONGO_URI"] = os.getenv("MONGO_URI")
+    app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
     mongo.init_app(app)
     bcrypt.init_app(app)  
   

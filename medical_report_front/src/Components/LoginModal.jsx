@@ -19,8 +19,9 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
 
       const data = await response.json();
 
-      if (data.success) {
-        onLoginSuccess();  // Notify parent component that login was successful
+      if (data.token) {
+        localStorage.setItem('token', data.token);  // تخزين التوكن
+        onLoginSuccess(data.token);  // Notify parent component that login was successful
         onClose();
       } else {
         alert('Invalid credentials');

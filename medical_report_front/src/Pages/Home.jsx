@@ -21,10 +21,10 @@ const Home = () => {
       By integrating advanced deep learning models, the system can analyze medical images, detect anomalies, and produce clear, professional diagnostic reports — streamlining the medical workflow and assisting healthcare professionals in decision-making.</span>
       </div>
    
-          <Navbar 
+          {/* <Navbar 
         onLoginClick={() => setShowLogin(true)} 
         onSignupClick={() => setShowSignUp(true)} 
-      />
+      /> */}
       <div className="home-container">
         <h1>Welcome to Medical Report System</h1>
         <p>Everything you need is here, no need for the doctor</p>

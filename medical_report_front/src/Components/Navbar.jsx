@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom'; // استخدام Link للتوجيه
 import '../Styles/Navbar.css';
 import logo from "../assets/logo.png";
 
@@ -16,6 +17,7 @@ const Navbar = ({ onLoginClick, onSignupClick, isAuthenticated, onLogout }) => {
         {isAuthenticated ? (
           <>
             <li><button onClick={onLogout}>Logout</button></li>
+            <li><Link to="/user-profile">Profile</Link></li>
           </>
         ) : (
           <>
