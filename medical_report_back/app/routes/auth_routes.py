@@ -18,7 +18,7 @@ def register():
         return jsonify({"message": "Email, name, and password are required"}), 400
 
 
-    role = data.get('role', 'user')
+    role = data.get('role', 'admin')
 
     if User.find_by_email(data['email']):
         return jsonify({"message": "User already exists"}), 400

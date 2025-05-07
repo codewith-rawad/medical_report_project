@@ -29,6 +29,7 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
           role: data.user.role,
           _id: data.user._id
         }));
+        
 
      
         onLoginSuccess(data.token);

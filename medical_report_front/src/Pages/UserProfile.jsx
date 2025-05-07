@@ -48,7 +48,6 @@ const UserProfile = () => {
 
   const handleSave = async () => {
     try {
-      
       const cleanData = {
         phone: formData.phone.trim() || undefined,
         address: formData.address.trim() || undefined,
@@ -56,8 +55,6 @@ const UserProfile = () => {
         profile_pic: formData.profile_pic.trim() || undefined
       };
 
-
-      debugger
       const res = await fetch('http://127.0.0.1:5000/api/update_profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -76,7 +73,7 @@ const UserProfile = () => {
       }
     } catch (error) {
       console.error(error);
-      alert({error});
+      alert('Error updating profile');
     }
   };
 
