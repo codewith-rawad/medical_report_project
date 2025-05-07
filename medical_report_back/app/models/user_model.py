@@ -2,6 +2,8 @@ from app import mongo
 from datetime import datetime
 
 class User:
+    collection = mongo.db.users  
+
     def __init__(self, name, email, password, role="user", phone=None, address=None, age=None, profile_pic=None):
         self.name = name
         self.email = email
@@ -15,24 +17,21 @@ class User:
         self.updated_at = datetime.utcnow()
 
     def save(self):
-        user_collection = mongo.db.users
-        user_collection.insert_one(self.__dict__)
-
-    def update(self, updates):
+        self.created_at = datetime.utcnow()
         self.updated_at = datetime.utcnow()
-        mongo.db.users.update_one({"email": self.email}, {"$set": {**updates, "updated_at": self.updated_at}})
+        User.collection.insert_one(self.__dict__)
 
     def delete(self):
-        mongo.db.users.delete_one({"email": self.email})
+        User.collection.delete_one({"email": self.email})
 
     @staticmethod
     def find_by_email(email):
-        return mongo.db.users.find_one({"email": email})
+        return User.collection.find_one({"email": email})
 
     @staticmethod
     def find_by_id(user_id):
-        return mongo.db.users.find_one({"_id": user_id})
+        return User.collection.find_one({"_id": user_id})
 
     @staticmethod
     def get_all():
-        return list(mongo.db.users.find())
+        return list(User.collection.find())
