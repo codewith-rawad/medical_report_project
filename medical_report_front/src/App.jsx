@@ -7,6 +7,7 @@ import AdminPage from '../src/Pages/Admin';
 import LoginModal from '../src/Components/LoginModal';
 import Navbar from '../src/Components/Navbar';
 import SignUp from './Components/Signup';
+import About from './Pages/ِAbout';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -79,6 +80,8 @@ function App() {
 
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/About" element={<About />} />
+    
         <Route
           path="/user-profile"
           element={

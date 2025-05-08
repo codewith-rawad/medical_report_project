@@ -1,0 +1,103 @@
+.about-wrapper {
+    position: relative;
+    width: 100vw;
+    min-height: 100vh;
+    overflow: hidden;
+    font-family: 'Segoe UI', sans-serif;
+    padding: 4rem 1.5rem;
+    color: #e0f7fa;
+  }
+  
+  .intro-card {
+    background-color: rgba(0, 95, 115, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 30px;
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
+    padding: 2rem;
+    margin: auto;
+    max-width: 85%;
+    gap: 2rem;
+    z-index: 2;
+    position: relative;
+  }
+  
+  .robot-img {
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    transition: transform 0.4s;
+  }
+  
+  .robot-img:hover {
+    transform: scale(1.05) rotate(3deg);
+  }
+  
+  .intro-text {
+    flex: 1;
+  }
+  
+  .intro-text h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #e0f7fa;
+    text-shadow: 2px 2px 4px #003d4d;
+  }
+  
+  .intro-text p {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    text-shadow: 1px 1px 2px #002f3d;
+  }
+  
+  /* Call To Action Section */
+  .cta-section {
+    text-align: center;
+    margin-top: 4rem;
+    padding: 2rem;
+    background: rgba(0, 95, 115, 0.85);
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  }
+  
+  .cta-section h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .cta-section p {
+    font-size: 1.1rem;
+  }
+  
+  /* Animations */
+  .float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  .fade-in {
+    animation: fadeIn 1.5s ease forwards;
+  }
+  
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-12px);
+    }
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  

@@ -13,7 +13,9 @@ const Navbar = ({ onLoginClick, onSignupClick, isAuthenticated, onLogout, userRo
         <li> <Link to= "/">
                 Home
               </Link></li>
-        <li><a href="#about">About</a></li>
+              <li> <Link to= "/About">
+          About
+              </Link></li>
         <li><a href="#gallery">Gallery</a></li>
         <li><a href="#contact">Contact</a></li>
         {isAuthenticated ? (

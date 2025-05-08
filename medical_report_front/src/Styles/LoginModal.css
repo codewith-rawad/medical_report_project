@@ -44,8 +44,10 @@
   }
   
   .modal input {
-    width: 100%;
+    width: 80%;
+
     padding: 0.8rem;
+padding-right: 50px;
     margin: 0.6rem 0;
     border: 1px solid #ccc;
     border-radius: 10px;
