@@ -9,6 +9,8 @@ import Navbar from '../src/Components/Navbar';
 import SignUp from './Components/Signup';
 import About from './Pages/ِAbout';
 import Contact from "./Pages/Contact"
+import Gallery from './Pages/Gallery';
+import "../src/App.css"
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState('');  
@@ -82,7 +84,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/About" element={<About />} />
         <Route path="/Contact" element={<Contact />} />
-    
+        <Route path="/Gallery" element={<Gallery/>} />
         <Route
           path="/user-profile"
           element={

@@ -1,0 +1,118 @@
+.admin-container {
+    position: relative;
+    padding: 2rem;
+    min-height: 100vh;
+    /* background: linear-gradient(to right, #0f2027, #203a43, #2c5364); */
+    color: #fff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  h1 {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2.5rem;
+    letter-spacing: 1px;
+  }
+  
+  .users-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+    position: relative;
+    bottom: 100px;
+    margin-bottom: 25px;
+
+  }
+  
+  .user-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    padding: 1.5rem;
+    width: 250px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 300px;
+  }
+  
+  .user-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+  }
+  
+  .user-image {
+    /* width: 100px;
+    height: 100px;
+    border-radius: 50%; */
+    width: 75px;
+    height: 75px !important;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 1rem;
+    border: 3px solid #00d4ff;
+    position: absolute;
+  }
+  
+  .user-details {
+    text-align: center;
+    margin-top: 50px;
+    line-height: 1.5;
+    position: relative;
+    top: 70px;
+  }
+  
+  .user-details p {
+    margin: 0.3rem 0;
+    font-size: 0.95rem;
+  }
+  
+  .delete-btn {
+    background-color: #ff4d4d;
+    border: none;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    position: relative;
+    top: 40px;
+  }
+  
+  .delete-btn:hover {
+    background-color: #e60000;
+  }
+  
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+position: relative;
+bottom: 110px;
+  }
+  
+  .pagination button {
+ 
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    background-color: #00d4ff;
+    color: #000;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    width: 150px;
+  }
+  
+  .pagination button:hover {
+    background-color: #00bcd4;
+  }
+  

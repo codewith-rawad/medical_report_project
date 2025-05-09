@@ -30,7 +30,7 @@ const Home = () => {
       {showSignUp && <SignUp onClose={() => setShowSignUp(false)} />} */}
         <div className="home-container">
         <h1>Welcome to Medical Report System</h1>
-        <p>Everything you need is here, no need for the doctor</p>
+      
       </div>
 
 

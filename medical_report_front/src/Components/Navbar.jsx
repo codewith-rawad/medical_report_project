@@ -27,7 +27,12 @@ const Navbar = ({ onLoginClick, onSignupClick, isAuthenticated, onLogout, userRo
           </NavLink>
         </li>
         <li>
-          <a href="#gallery" className="nav-link">Gallery</a>
+          <NavLink
+            to="Gallery"
+            className={({ isActive }) => isActive ? 'nav-link active-link' : 'nav-link'}
+          >
+            Gallery
+          </NavLink>
         </li>
         <li>
           <NavLink
