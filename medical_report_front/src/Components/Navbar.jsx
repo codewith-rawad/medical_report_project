@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom'; 
+import { NavLink } from 'react-router-dom'; 
 import '../Styles/Navbar.css';
 import logo from "../assets/logo.png";
 
@@ -10,21 +10,43 @@ const Navbar = ({ onLoginClick, onSignupClick, isAuthenticated, onLogout, userRo
         <img className="logo" src={logo} alt="Medical Logo" />
       </div>
       <ul className="nav-links">
-        <li> <Link to= "/">
-                Home
-              </Link></li>
-              <li> <Link to= "/About">
-          About
-              </Link></li>
-        <li><a href="#gallery">Gallery</a></li>
-        <li><a href="#contact">Contact</a></li>
+        <li>
+          <NavLink
+            to="/"
+            className={({ isActive }) => isActive ? 'nav-link active-link' : 'nav-link'}
+          >
+            Home
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/About"
+            className={({ isActive }) => isActive ? 'nav-link active-link' : 'nav-link'}
+          >
+            About
+          </NavLink>
+        </li>
+        <li>
+          <a href="#gallery" className="nav-link">Gallery</a>
+        </li>
+        <li>
+          <NavLink
+            to="/Contact"
+            className={({ isActive }) => isActive ? 'nav-link active-link' : 'nav-link'}
+          >
+            Contact
+          </NavLink>
+        </li>
+
         {isAuthenticated ? (
           <>
-           
             <li>
-              <Link to={userRole === 'admin' ? "/admin" : "/user-profile"}>
+              <NavLink
+                to={userRole === 'admin' ? "/admin" : "/user-profile"}
+                className={({ isActive }) => isActive ? 'nav-link active-link' : 'nav-link'}
+              >
                 Profile
-              </Link>
+              </NavLink>
             </li>
             <li><button onClick={onLogout}>Logout</button></li>
           </>
