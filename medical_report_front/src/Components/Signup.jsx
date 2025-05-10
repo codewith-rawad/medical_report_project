@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import '../Styles/signup.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // استايل جاهز
 
 const SignUp = ({ onClose }) => {
   const [formData, setFormData] = useState({
@@ -20,7 +22,10 @@ const SignUp = ({ onClose }) => {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match!');
+      toast.error('Passwords do not match!', {
+        position: 'top-center',
+        theme: 'colored',
+      });
       return;
     }
 
@@ -31,7 +36,7 @@ const SignUp = ({ onClose }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: formData.username, 
+          name: formData.username,
           email: formData.email,
           password: formData.password,
         }),
@@ -40,12 +45,24 @@ const SignUp = ({ onClose }) => {
       const data = await response.json();
 
       if (data.message === 'User created successfully') {
-        alert('Sign up successful!');
-        onClose();
+        toast.success('Sign up successful! 🎉', {
+          position: 'top-center',
+          theme: 'colored',
+        });
+        setTimeout(() => {
+          onClose();
+        }, 2000); // غلق النافذة بعد 2 ثانية
       } else {
-        alert('Error: ' + data.message);
+        toast.error(`Error: ${data.message}`, {
+          position: 'top-center',
+          theme: 'colored',
+        });
       }
     } catch (error) {
+      toast.error('Something went wrong! 😓', {
+        position: 'top-center',
+        theme: 'colored',
+      });
       console.error('Error:', error);
     }
   };
@@ -89,6 +106,9 @@ const SignUp = ({ onClose }) => {
         <button type="submit" className="modal-btn">Sign Up</button>
         <button type="button" onClick={onClose} className="close-btn modal-btn">Cancel</button>
       </form>
+
+      {/* Toast container */}
+      <ToastContainer />
     </div>
   );
 };

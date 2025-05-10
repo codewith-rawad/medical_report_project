@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import '../Styles/LoginModal.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const LoginModal = ({ onClose, onLoginSuccess }) => {
   const [email, setEmail] = useState('');
@@ -7,7 +9,7 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       const response = await fetch('http://127.0.0.1:5000/api/login', {
         method: 'POST',
@@ -20,7 +22,6 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
       const data = await response.json();
 
       if (data.token) {
-       
         localStorage.setItem('token', data.token);
 
         localStorage.setItem('user', JSON.stringify({
@@ -29,16 +30,28 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
           role: data.user.role,
           _id: data.user._id
         }));
-        
 
-     
-        onLoginSuccess(data.token);
-        onClose();
+        toast.success('Login successful! 🎉', {
+          position: 'top-center',
+          theme: 'colored',
+        });
+
+        setTimeout(() => {
+          onLoginSuccess(data.token);
+          onClose();
+        }, 2000);
       } else {
-        alert('Invalid credentials');
+        toast.error('Invalid credentials ❌', {
+          position: 'top-center',
+          theme: 'colored',
+        });
       }
     } catch (error) {
       console.error('Error:', error);
+      toast.error('Something went wrong! 😢', {
+        position: 'top-center',
+        theme: 'colored',
+      });
     }
   };
 
@@ -64,6 +77,7 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
           <button className="modal-btn" type="submit">Login</button>
         </form>
         <button className="modal-btn close" onClick={onClose}>Close</button>
+        <ToastContainer />
       </div>
     </div>
   );

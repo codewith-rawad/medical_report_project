@@ -3,21 +3,24 @@ import '../Styles/Admin.css';
 import Background from '../Components/Background';
 import Back1 from '../assets/background.jpg';
 import Back2 from '../assets/background2.jpg';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AdminPage = () => {
-  const arry=[Back1,Back2];
+  const arry = [Back1, Back2];
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [search, setSearch] = useState('');
   const perPage = 3;
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch(`http://127.0.0.1:5000/api/users?page=${page}&per_page=${perPage}`);
+      const res = await fetch(`http://127.0.0.1:5000/api/users?page=${page}&per_page=${perPage}&search=${search}`);
       const data = await res.json();
       setUsers(data.users || []);
     } catch (err) {
-      console.error(err);
-      alert('Error fetching users.');
+      toast.error('Failed to fetch users.');
     }
   };
 
@@ -25,31 +28,54 @@ const AdminPage = () => {
     fetchUsers();
   }, [page]);
 
-  const deleteUser = async (userId) => {
-    if (!window.confirm("Are you sure you want to delete this user?")) return;
+  const handleSearch = () => {
+    setPage(1);
+    fetchUsers();
+  };
+
+  const handleDeleteClick = (user) => {
+    setSelectedUser(user);
+  };
+
+  const confirmDelete = async () => {
+    if (!selectedUser) return;
+
     try {
-      const res = await fetch(`http://127.0.0.1:5000/api/users/${userId}`, {
+      const res = await fetch(`http://127.0.0.1:5000/api/users/${selectedUser._id}`, {
         method: 'DELETE',
       });
       const result = await res.json();
+
       if (res.ok) {
-        alert('User deleted successfully!');
-        fetchUsers(); // Refresh list
+        toast.success('User deleted successfully.');
+        fetchUsers();
+        setSelectedUser(null);
       } else {
-        alert(result.message || 'Failed to delete user.');
+        toast.error(result.message || 'Failed to delete user.');
       }
     } catch (err) {
-      console.error(err);
-      alert('Error deleting user.');
+      toast.error('Error deleting user.');
     }
   };
 
   return (
     <div className="admin-container">
-      <h1>Admin Dashboard – Users</h1>
+
+
+      <div className="search-container">
+        <input
+          type="text"
+          placeholder="Search by name or email..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="search-input"
+        />
+        <button onClick={handleSearch} className="search-btn">Search</button>
+      </div>
+
       <div className="users-list">
         {users.length === 0 ? (
-          <p>No users found.</p>
+          <p style={{ position: "relative", top: "50px" }}>No users found.</p>
         ) : (
           users.map((user) => (
             <div key={user._id} className="user-card">
@@ -66,17 +92,34 @@ const AdminPage = () => {
                 <p><strong>Address:</strong> {user.address || 'N/A'}</p>
                 <p><strong>Age:</strong> {user.age || 'N/A'}</p>
               </div>
-              <button className="delete-btn" onClick={() => deleteUser(user._id)}>Delete</button>
+              <button className="delete-btn" onClick={() => handleDeleteClick(user)}>Delete</button>
             </div>
           ))
         )}
       </div>
+
       <div className="pagination">
         <button disabled={page === 1} onClick={() => setPage(p => p - 1)}>Previous</button>
-        <span style={{position:"relative",left:"50px"}}>Page {page}</span>
+        <span style={{ position: "relative", left: "50px" }}>Page {page}</span>
         <button onClick={() => setPage(p => p + 1)}>Next</button>
       </div>
-      <Background images={arry}/>
+
+      {/* ✅ Popup for delete confirmation */}
+      {selectedUser && (
+        <div className="popup-backdrop">
+          <div className="popup-box">
+            <h3>Confirm Delete</h3>
+            <p>Are you sure you want to delete <strong>{selectedUser.name}</strong>?</p>
+            <div className="popup-actions">
+              <button className="confirm-btn" onClick={confirmDelete}>Yes, Delete</button>
+              <button className="cancel-btn" onClick={() => setSelectedUser(null)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <ToastContainer position="top-right" autoClose={3000} />
+      <Background images={arry} />
     </div>
   );
 };

@@ -8,6 +8,7 @@ app = create_app()
 def home():
     return 'Welcome to the Medical Report System!'
 
+
 if __name__ == '__main__':
     print(app.url_map)
 

@@ -1,4 +1,3 @@
-
 from flask import Blueprint, request, jsonify
 from app.models.user_model import User
 from bson import ObjectId
@@ -11,9 +10,17 @@ def get_users():
         page = int(request.args.get('page', 1))
         per_page = int(request.args.get('per_page', 3))
         skip = (page - 1) * per_page
+        search = request.args.get('search', '')
 
-        users_cursor = User.collection.find().skip(skip).limit(per_page)
-        total_users = User.collection.count_documents({})
+        query = {"role": "user"}
+        if search:
+            query["$or"] = [
+                {"name": {"$regex": search, "$options": "i"}},
+                {"email": {"$regex": search, "$options": "i"}}
+            ]
+
+        users_cursor = User.collection.find(query).skip(skip).limit(per_page)
+        total_users = User.collection.count_documents(query)
 
         users = []
         for user in users_cursor:
@@ -28,7 +35,6 @@ def get_users():
         }), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
 
 @admin_bp.route('/users/<user_id>', methods=['DELETE'])
 def delete_user(user_id):
