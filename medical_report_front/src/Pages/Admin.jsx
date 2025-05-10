@@ -15,7 +15,7 @@ const AdminPage = () => {
   const [search, setSearch] = useState('');
   const perPage = 3;
 
-  // Function to fetch users based on search query
+  
   const fetchUsers = async () => {
     try {
       const res = await fetch(`http://127.0.0.1:5000/api/users?page=${page}&per_page=${perPage}&search=${search}`);
@@ -26,13 +26,13 @@ const AdminPage = () => {
     }
   };
 
-  // Debounced function to avoid excessive API calls
+
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchUsers();
-    }, 500); // Wait 500ms after the user stops typing
+    }, 500); 
 
-    return () => clearTimeout(timer); // Cleanup the timer
+    return () => clearTimeout(timer); 
   }, [search, page]);
 
   const handleDeleteClick = (user) => {
@@ -49,14 +49,27 @@ const AdminPage = () => {
       const result = await res.json();
 
       if (res.ok) {
-        toast.success('User deleted successfully.');
-        fetchUsers();
-        setSelectedUser(null);
+        toast.success('User deleted successfully! 🎉', {
+          position: 'top-center',
+          theme: 'colored',
+        });
+
+        setTimeout(() => {
+      
+          fetchUsers();
+          setSelectedUser(null);
+        }, 2000);
       } else {
-        toast.error(result.message || 'Failed to delete user.');
+        toast.error(result.message || 'Failed to delete user ❌', {
+          position: 'top-center',
+          theme: 'colored',
+        });
       }
     } catch (err) {
-      toast.error('Error deleting user.');
+      toast.error('Error deleting user ❌', {
+        position: 'top-center',
+        theme: 'colored',
+      });
     }
   };
 
@@ -106,7 +119,6 @@ const AdminPage = () => {
         <button onClick={() => setPage(p => p + 1)}>Next</button>
       </div>
 
-      {/* ✅ Popup for delete confirmation */}
       {selectedUser && (
         <div className="popup-backdrop">
           <div className="popup-box">
