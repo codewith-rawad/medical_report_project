@@ -5,6 +5,7 @@ import Back1 from '../assets/background.jpg';
 import Back2 from '../assets/background2.jpg';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { FaRegFrown } from 'react-icons/fa'; 
 
 const AdminPage = () => {
   const arry = [Back1, Back2];
@@ -14,6 +15,7 @@ const AdminPage = () => {
   const [search, setSearch] = useState('');
   const perPage = 3;
 
+  // Function to fetch users based on search query
   const fetchUsers = async () => {
     try {
       const res = await fetch(`http://127.0.0.1:5000/api/users?page=${page}&per_page=${perPage}&search=${search}`);
@@ -24,14 +26,14 @@ const AdminPage = () => {
     }
   };
 
+  // Debounced function to avoid excessive API calls
   useEffect(() => {
-    fetchUsers();
-  }, [page]);
+    const timer = setTimeout(() => {
+      fetchUsers();
+    }, 500); // Wait 500ms after the user stops typing
 
-  const handleSearch = () => {
-    setPage(1);
-    fetchUsers();
-  };
+    return () => clearTimeout(timer); // Cleanup the timer
+  }, [search, page]);
 
   const handleDeleteClick = (user) => {
     setSelectedUser(user);
@@ -60,8 +62,6 @@ const AdminPage = () => {
 
   return (
     <div className="admin-container">
-
-
       <div className="search-container">
         <input
           type="text"
@@ -70,12 +70,14 @@ const AdminPage = () => {
           onChange={(e) => setSearch(e.target.value)}
           className="search-input"
         />
-        <button onClick={handleSearch} className="search-btn">Search</button>
       </div>
 
       <div className="users-list">
         {users.length === 0 ? (
-          <p style={{ position: "relative", top: "50px" }}>No users found.</p>
+          <div className="no-users">
+            <FaRegFrown className='sad' size={50} color="gray" />
+            <p style={{ position: "relative", top: "50px" }}>No users found.</p>
+          </div>
         ) : (
           users.map((user) => (
             <div key={user._id} className="user-card">
