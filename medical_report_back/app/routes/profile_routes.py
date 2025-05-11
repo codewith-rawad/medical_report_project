@@ -1,24 +1,26 @@
 from flask import Blueprint, request, jsonify
-from app.models.user_model import User 
+from app.models.user_model import User
+from bson import ObjectId
 
 profile_bp = Blueprint('profile', __name__)
 
 @profile_bp.route('/update_profile', methods=['POST'])
 def update_profile():
     data = request.get_json()
-    id = data.get('_id')
-    
-    user = User.find_by_id(id)
-    print(id)
+    user_id = data.get('_id')
+
+    if not user_id:
+        return jsonify({"message": "User ID is required"}), 400
+
+    user = User.find_by_id(user_id)
     if not user:
         return jsonify({"message": "User not found"}), 404
 
     updates = {}
     for field in ['phone', 'address', 'age', 'profile_pic']:
-        if data.get(field):
-            updates[field] = data[field]
+        value = data.get(field)
+        if value:
+            updates[field] = value
 
-  
-    User.collection.update_one({"_id": user["_id"]}, {"$set": updates})
-
+    User.update_user(user['_id'], updates)
     return jsonify({"message": "Profile updated successfully"}), 200

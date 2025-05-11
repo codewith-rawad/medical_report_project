@@ -1,8 +1,9 @@
 from app import mongo
 from datetime import datetime
+from bson import ObjectId
 
 class User:
-    collection = mongo.db.users  
+    collection = mongo.db.users
 
     def __init__(self, name, email, password, role="user", phone=None, address=None, age=None, profile_pic=None):
         self.name = name
@@ -17,21 +18,41 @@ class User:
         self.updated_at = datetime.utcnow()
 
     def save(self):
+        
         self.created_at = datetime.utcnow()
         self.updated_at = datetime.utcnow()
         User.collection.insert_one(self.__dict__)
 
     def delete(self):
+
         User.collection.delete_one({"email": self.email})
 
     @staticmethod
     def find_by_email(email):
+   
         return User.collection.find_one({"email": email})
 
     @staticmethod
     def find_by_id(user_id):
-        return User.collection.find_one({"_id": user_id})
+
+        try:
+            return User.collection.find_one({"_id": ObjectId(user_id)})
+        except Exception:
+            return None
+
+    @staticmethod
+    def update_user(user_id, updates):
+ 
+        updates["updated_at"] = datetime.utcnow()
+        try:
+            return User.collection.update_one(
+                {"_id": ObjectId(user_id)},
+                {"$set": updates}
+            )
+        except Exception:
+            return None
 
     @staticmethod
     def get_all():
+ 
         return list(User.collection.find())

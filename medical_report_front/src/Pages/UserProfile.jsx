@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../Styles/Dashboard.css';
 
 const UserProfile = () => {
@@ -46,13 +46,24 @@ const UserProfile = () => {
     }));
   };
 
+  const handleImageUpload = e => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFormData(prev => ({ ...prev, profile_pic: reader.result }));
+    };
+    if (file) {
+      reader.readAsDataURL(file); // تحويل الصورة إلى base64
+    }
+  };
+
   const handleSave = async () => {
     try {
       const cleanData = {
         phone: formData.phone.trim() || undefined,
         address: formData.address.trim() || undefined,
         age: formData.age.trim() || undefined,
-        profile_pic: formData.profile_pic.trim() || undefined
+        profile_pic: formData.profile_pic || undefined
       };
 
       const res = await fetch('http://127.0.0.1:5000/api/update_profile', {
@@ -98,8 +109,8 @@ const UserProfile = () => {
               <input name="address" value={formData.address} onChange={handleChange} />
               <label>Age:</label>
               <input name="age" type="number" value={formData.age} onChange={handleChange} />
-              <label>Profile Picture URL:</label>
-              <input name="profile_pic" value={formData.profile_pic} onChange={handleChange} />
+              <label>Profile Picture:</label>
+              <input type="file" accept="image/*" onChange={handleImageUpload} />
               <button className="edit-btn" onClick={handleSave}>Save Profile</button>
             </>
           ) : (
