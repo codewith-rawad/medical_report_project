@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import '../Styles/Dashboard.css';
-
+import '../Styles/userProfile.css';
+import { toast } from 'react-toastify'; 
+import 'react-toastify/dist/ReactToastify.css'; 
+import Background from '../Components/Background';
+import contact1 from '../assets/background2.jpg';
+import contact2 from '../assets/contact2.jpg';
 const UserProfile = () => {
+  const arry=[contact1,contact2];
   const [user, setUser] = useState({});
   const [formData, setFormData] = useState({
     phone: '',
@@ -12,6 +17,7 @@ const UserProfile = () => {
   const [editMode, setEditMode] = useState(false);
   const [images, setImages] = useState([]);
   const [reports, setReports] = useState([]);
+  const [showPopup, setShowPopup] = useState(false); 
 
   useEffect(() => {
     const localUser = JSON.parse(localStorage.getItem('user') || '{}');
@@ -36,7 +42,7 @@ const UserProfile = () => {
   }, []);
 
   const handleEdit = () => {
-    setEditMode(true);
+    setShowPopup(true);  
   };
 
   const handleChange = e => {
@@ -53,7 +59,7 @@ const UserProfile = () => {
       setFormData(prev => ({ ...prev, profile_pic: reader.result }));
     };
     if (file) {
-      reader.readAsDataURL(file); // تحويل الصورة إلى base64
+      reader.readAsDataURL(file);
     }
   };
 
@@ -74,32 +80,45 @@ const UserProfile = () => {
 
       const result = await res.json();
       if (res.ok) {
-        alert('Profile updated successfully!');
+        toast.success('Profile updated successfully! 🎉', {
+          position: 'top-center',
+          theme: 'colored',
+        });
         const updatedUser = { ...user, ...cleanData };
         localStorage.setItem('user', JSON.stringify(updatedUser));
         setUser(updatedUser);
-        setEditMode(false);
+        setShowPopup(false);  
       } else {
-        alert(result.message || 'Failed to update profile.');
+        toast.error(result.message || 'Failed to update profile.', {
+          position: 'top-center',
+          theme: 'colored',
+        });
       }
     } catch (error) {
       console.error(error);
-      alert('Error updating profile');
+      toast.error('Error updating profile', {
+        position: 'top-center',
+        theme: 'colored',
+      });
     }
+  };
+
+  const handleClosePopup = () => {
+    setShowPopup(false);  
   };
 
   return (
     <div className="page-container">
+      <h1 className="username">Welcome, {user.name}</h1>
       <div className="profile-card">
         <img
           className="profile-pic"
           src={formData.profile_pic || 'https://via.placeholder.com/150'}
           alt="Profile"
         />
-        <h1 className="username">Welcome, {user.name}</h1>
+        
         <div className="info">
-          <p><strong>Email:</strong> {user.email}</p>
-          <p><strong>Role:</strong> {user.role}</p>
+       
 
           {editMode ? (
             <>
@@ -115,49 +134,48 @@ const UserProfile = () => {
             </>
           ) : (
             <>
-              <p><strong>Phone:</strong> {user.phone || 'N/A'}</p>
-              <p><strong>Address:</strong> {user.address || 'N/A'}</p>
-              <p><strong>Age:</strong> {user.age || 'N/A'}</p>
+            <div className="first">
+            <p><strong>Email:</strong> {user.email}</p>
+        
+        <p><strong>Phone:</strong> {user.phone || 'N/A'}</p>
+            </div>
+          <div className="second">   
+          <p><strong>Age:</strong> {user.age || 'N/A'}</p>
+              <p><strong>Address:</strong> {user.address || 'N/A'}</p></div>
+           
               <button className="edit-btn" onClick={handleEdit}>Edit Profile</button>
+              <div className="two_button"> <button className="my-report-btn" >My reports</button>
+              
+              <button className="my-xrays" >My Images</button></div>
+             
             </>
           )}
         </div>
       </div>
 
-      <div className="gallery-section">
-        <h2>Your Medical Images</h2>
-        {images.length === 0 ? (
-          <p>No images uploaded yet.</p>
-        ) : (
-          <div className="image-grid">
-            {images.map((img, idx) => (
-              <div key={idx} className="image-card">
-                <img src={img.url} alt={`medical-${idx}`} />
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+    
 
-      <div className="reports-section">
-        <h2>Your Medical Reports</h2>
-        {reports.length === 0 ? (
-          <p>No reports available.</p>
-        ) : (
-          <div className="report-list">
-            {reports.map((report, idx) => (
-              <div key={idx} className="report-card">
-                <h3>Report #{idx + 1}</h3>
-                <p><strong>Date:</strong> {new Date(report.created_at).toLocaleDateString()}</p>
-                <p>{report.content}</p>
-                {report.image_url && (
-                  <img className="report-img" src={report.image_url} alt="Associated" />
-                )}
-              </div>
-            ))}
+     
+
+      {/* Popup Modal for Edit Profile */}
+      {showPopup && (
+        <div className="popup-overlay">
+          <div className="popup-content">
+            <h2>Edit Profile</h2>
+            <label>Phone:</label>
+            <input name="phone" value={formData.phone} onChange={handleChange} />
+            <label>Address:</label>
+            <input name="address" value={formData.address} onChange={handleChange} />
+            <label>Age:</label>
+            <input name="age" type="number" value={formData.age} onChange={handleChange} />
+            <label>Profile Picture:</label>
+            <input type="file" accept="image/*" onChange={handleImageUpload} />
+            <button className="save-btn" onClick={handleSave}>Save</button>
+            <button className="cancel-btn" onClick={handleClosePopup}>Cancel</button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
+      <Background images={arry}/>
     </div>
   );
 };
