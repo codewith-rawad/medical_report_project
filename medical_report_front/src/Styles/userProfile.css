@@ -17,12 +17,13 @@
     border-radius: 15px;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
     padding: 25px;
-    width: 85%;
+    width: 70%;
     position: relative;
     margin-bottom: 30px;
     color: white;
-    height: 300px;
+    height: 250px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    padding-bottom: 40px;
   }
   
   .profile-card:hover {
@@ -49,6 +50,8 @@
     flex-direction: column;
     justify-content: center;
     width: 45%;
+    position: relative;
+    top: -5px;
     
   }
   .two_button{
@@ -86,7 +89,7 @@
   
   .edit-btn,
   .save-btn,
-  .cancel-btn {
+  .cancel-btn,.generate_report {
     padding: 12px 25px;
     border: none;
     border-radius: 5px;
@@ -96,7 +99,7 @@
     margin-top: 15px;
   }
   
-  .edit-btn {
+  .edit-btn,.generate_report {
     background-color: #0a9396;;
     color:white;
   }
@@ -117,7 +120,7 @@
   }
   
   .popup-content {
-    background: rgba(255, 255, 255, 0.15);
+    background:#005f73 !important;
     backdrop-filter: blur(15px);
     padding: 30px;
     border-radius: 20px;
@@ -159,23 +162,19 @@
   }
   
   .save-btn {
-    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-    color: white;
+background-color: #f06292 !important;
   }
   
   .save-btn:hover {
-    background: linear-gradient(135deg, #38f9d7 0%, #43e97b 100%);
-    transform: scale(1.05);
+   
   }
   
   .cancel-btn {
-    background: linear-gradient(135deg, #ff4e50 0%, #f9d423 100%);
-    color: white;
+ 
   }
   
   .cancel-btn:hover {
-    background: linear-gradient(135deg, #f9d423 0%, #ff4e50 100%);
-    transform: scale(1.05);
+ 
   }
   
   /* Animations */
@@ -200,6 +199,94 @@
   }
   
 
+ 
+
+  .popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+  }
+  
+  .popup-content {
+    background:#0a9396;
+    padding: 30px;
+    border-radius: 12px;
+    width: 60%;
+    max-width: 500px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+    color: white;
+    animation: popupAnimation 0.4s ease-out;
+  }
+  
+  .popup-content h2 {
+    margin-bottom: 20px;
+    color: black;
+    font-weight: 800;
+  }
+  
+  .popup-content label {
+    display: block;
+    text-align: left;
+    margin: 12px 0 5px;
+    font-weight: bold;
+  }
+  
+  .popup-content input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border: none;
+    font-size: 1rem;
+    color: black;
+  }
+  
+  .save-btn {
+    background-color: #318d1b !important;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    margin-right: 10px;
+    width: 100px;
+    transition:  all 0.5s;
+  }
+  
+  .cancel-btn {
+    background-color: #d81414 !important;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .save-btn:hover {
+  scale: 1.1;
+  }
+  
+
+  
+  @keyframes popupAnimation {
+    0% {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
   
 
   
@@ -212,9 +299,54 @@
     justify-content: space-between;
     margin-top: 15px;
    color: #ffffff;
+   background-color: #292828;
+   border-radius: 10px;
   }
   
 
   .username{
     font-size: 40px;
   }
+  
+
+  p{
+    position: relative;
+    top:5px;
+    border-radius: 5px;
+    /* background-color:#0a9396; */
+    width: 200px;
+    padding: 10px 0px;
+  }
+  .popup-content {
+    background: linear-gradient(145deg, #0a9396, #005f73);
+    padding: 35px 30px;
+    border-radius: 20px;
+    width: 60%;
+    max-width: 500px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    color: white;
+    animation: popupAnimation 0.4s ease-out;
+    border: 1px solid #94d2bd;
+    backdrop-filter: blur(4px);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .popup-content::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.05) 20%, transparent 60%);
+    animation: shimmer 8s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+  
+  @keyframes shimmer {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  

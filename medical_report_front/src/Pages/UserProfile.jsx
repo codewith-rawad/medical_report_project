@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../Styles/userProfile.css';
-import { toast } from 'react-toastify'; 
+import { toast, ToastContainer } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css'; 
 import Background from '../Components/Background';
 import contact1 from '../assets/background2.jpg';
@@ -28,10 +28,6 @@ const UserProfile = () => {
       age: localUser.age || '',
       profile_pic: localUser.profile_pic || ''
     });
-
-
-
- 
   }, []);
 
   const handleEdit = () => {
@@ -57,14 +53,30 @@ const UserProfile = () => {
   };
 
   const handleSave = async () => {
-    try {
-      const cleanData = {
-        phone: formData.phone.trim() || undefined,
-        address: formData.address.trim() || undefined,
-        age: formData.age.trim() || undefined,
-        profile_pic: formData.profile_pic || undefined
-      };
+    // التحقق من البيانات المدخلة
+    const cleanData = {
+      phone: formData.phone.trim() || undefined,
+      address: formData.address.trim() || undefined,
+      age: formData.age.trim() || undefined,
+      profile_pic: formData.profile_pic || undefined
+    };
 
+    // التحقق إذا كانت البيانات المدخلة لا تختلف عن القيم الأصلية
+    const isDataUnchanged = 
+      cleanData.phone === user.phone &&
+      cleanData.address === user.address &&
+      cleanData.age === user.age &&
+      cleanData.profile_pic === user.profile_pic;
+
+    if (isDataUnchanged) {
+      toast.info('No changes made to the profile.', {
+        position: 'top-center',
+        theme: 'colored',
+      });
+      return; // إنهاء العملية إذا كانت البيانات لم تتغير
+    }
+
+    try {
       const res = await fetch('http://127.0.0.1:5000/api/update_profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -104,7 +116,7 @@ const UserProfile = () => {
       }
     } catch (error) {
       console.error(error);
-      toast.error('Error updating profile', {
+      toast.error('An error occurred while updating.', {
         position: 'top-center',
         theme: 'colored',
       });
@@ -125,7 +137,7 @@ const UserProfile = () => {
           alt="Profile"
         />
         <div className="info">
-          {!editMode ? (
+          {!editMode && (
             <>
               <div className="first">
                 <p><strong>Email:</strong> {user.email}</p>
@@ -141,8 +153,9 @@ const UserProfile = () => {
                 <button className="my-report-btn">My Reports</button>
                 <button className="my-xrays">My Images</button>
               </div>
+              <button className="generate_report">Generate Report</button>
             </>
-          ) : null}
+          )}
         </div>
       </div>
 
@@ -165,6 +178,8 @@ const UserProfile = () => {
       )}
 
       <Background images={arry} />
+
+      <ToastContainer />
     </div>
   );
 };

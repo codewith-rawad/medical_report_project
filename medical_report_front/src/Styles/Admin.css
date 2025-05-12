@@ -81,9 +81,11 @@ h1 {
   height: 75px !important;
   border-radius: 50%;
   object-fit: cover;
-  margin-bottom: 1rem;
+
   border: 3px solid #00d4ff;
   position: absolute;
+  bottom: 80%;
+
 }
 
 .user-details {
@@ -91,7 +93,7 @@ h1 {
   margin-top: 50px;
   line-height: 1.5;
   position: relative;
-  top: 70px;
+  top: 0px;
 }
 
 .user-details p {
@@ -109,7 +111,7 @@ h1 {
   cursor: pointer;
   transition: background-color 0.3s ease;
   position: relative;
-  top: 40px;
+  top: 20px;
 }
 
 .delete-btn:hover {
@@ -389,9 +391,12 @@ left: 30%;
   color: #f5f5f5;
   margin-bottom: 50px;
 }
+p{
 
+}
 /* Popup content */
 .popup-box p {
+  all: unset;
   font-size: 1rem;
   color: #d0d0d0;
   margin-bottom: 30px;
@@ -454,5 +459,62 @@ left: 30%;
   }
   100% {
     transform: scale(1);
+  }
+}
+
+
+p{
+  padding: 6px !important;
+}
+
+
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 250px;
+  text-align: center;
+  backdrop-filter: blur(2px);
+}
+
+.spinner {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #00bcd4;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loadercontainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 120px;
+}
+
+.loader {
+  width: 50px;
+  height: 50px;
+  border: 6px solid #e0f7fa; 
+  border-top: 6px solid #005f73; 
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  box-shadow: 0 0 15px #005f73aa;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }

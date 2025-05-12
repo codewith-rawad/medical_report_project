@@ -5,7 +5,7 @@ import Back1 from '../assets/background.jpg';
 import Back2 from '../assets/background2.jpg';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { FaRegFrown } from 'react-icons/fa'; 
+import { FaRegFrown } from 'react-icons/fa';
 
 const AdminPage = () => {
   const arry = [Back1, Back2];
@@ -13,27 +13,29 @@ const AdminPage = () => {
   const [page, setPage] = useState(1);
   const [selectedUser, setSelectedUser] = useState(null);
   const [search, setSearch] = useState('');
+  const [loader, setLoader] = useState(false);
   const perPage = 3;
 
-  
   const fetchUsers = async () => {
     try {
+      
+      setLoader(true);
+     await new Promise(resolve => setTimeout(resolve, 500));
       const res = await fetch(`http://127.0.0.1:5000/api/users?page=${page}&per_page=${perPage}&search=${search}`);
       const data = await res.json();
       setUsers(data.users || []);
     } catch (err) {
       toast.error('Failed to fetch users.');
+    } finally {
+      setLoader(false);
     }
   };
 
-
+  
   useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchUsers();
-    }, 500); 
 
-    return () => clearTimeout(timer); 
-  }, [search, page]);
+    fetchUsers();
+  }, [page, search]);
 
   const handleDeleteClick = (user) => {
     setSelectedUser(user);
@@ -55,7 +57,6 @@ const AdminPage = () => {
         });
 
         setTimeout(() => {
-      
           fetchUsers();
           setSelectedUser(null);
         }, 2000);
@@ -85,38 +86,43 @@ const AdminPage = () => {
         />
       </div>
 
-      <div className="users-list">
-        {users.length === 0 ? (
-          <div className="no-users">
-            <FaRegFrown className='sad' size={50} color="gray" />
-            <p style={{ position: "relative", top: "50px" }}>No users found.</p>
-          </div>
-        ) : (
-          users.map((user) => (
-            <div key={user._id} className="user-card">
-              <img
-                src={user.profile_pic || 'https://via.placeholder.com/100'}
-                alt="Profile"
-                className="user-image"
-              />
-              <div className="user-details">
-                <p><strong>Name:</strong> {user.name}</p>
-                <p><strong>Email:</strong> {user.email}</p>
-                <p><strong>Role:</strong> {user.role}</p>
-                <p><strong>Phone:</strong> {user.phone || 'N/A'}</p>
-                <p><strong>Address:</strong> {user.address || 'N/A'}</p>
-                <p><strong>Age:</strong> {user.age || 'N/A'}</p>
-              </div>
-              <button className="delete-btn" onClick={() => handleDeleteClick(user)}>Delete</button>
+      {loader ? (
+        <div className="loadercontainer">
+          <div className="loader"></div>
+        </div>
+      ) : (
+        <div className="users-list">
+          {users.length === 0 ? (
+            <div className="no-users">
+              <FaRegFrown className="sad" size={50} color="gray" />
+              <p style={{ position: 'relative', top: '50px' }}>No users found.</p>
             </div>
-          ))
-        )}
-      </div>
+          ) : (
+            users.map((user) => (
+              <div key={user._id} className="user-card">
+                <img
+                  src={user.profile_pic || 'https://via.placeholder.com/100'}
+                  alt="Profile"
+                  className="user-image"
+                />
+                <div className="user-details">
+                  <p><strong>Name:</strong> {user.name}</p>
+                  <p><strong>Email:</strong> {user.email}</p>
+                  <p><strong>Phone:</strong> {user.phone || 'N/A'}</p>
+                  <p><strong>Address:</strong> {user.address || 'N/A'}</p>
+                  <p><strong>Age:</strong> {user.age || 'N/A'}</p>
+                </div>
+                <button className="delete-btn" onClick={() => handleDeleteClick(user)}>Delete</button>
+              </div>
+            ))
+          )}
+        </div>
+      )}
 
       <div className="pagination">
-        <button disabled={page === 1} onClick={() => setPage(p => p - 1)}>Previous</button>
-        <span style={{ position: "relative", left: "50px" }}>Page {page}</span>
-        <button onClick={() => setPage(p => p + 1)}>Next</button>
+        <button disabled={page === 1} onClick={() => setPage((p) => p - 1)}>Previous</button>
+        <span style={{ position: 'relative', left: '50px' }}>Page {page}</span>
+        <button onClick={() => setPage((p) => p + 1)}>Next</button>
       </div>
 
       {selectedUser && (
