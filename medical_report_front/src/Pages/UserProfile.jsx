@@ -5,8 +5,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import Background from '../Components/Background';
 import contact1 from '../assets/background2.jpg';
 import contact2 from '../assets/contact2.jpg';
+
 const UserProfile = () => {
-  const arry=[contact1,contact2];
+  const arry = [contact1, contact2];
   const [user, setUser] = useState({});
   const [formData, setFormData] = useState({
     phone: '',
@@ -15,9 +16,7 @@ const UserProfile = () => {
     profile_pic: ''
   });
   const [editMode, setEditMode] = useState(false);
-  const [images, setImages] = useState([]);
-  const [reports, setReports] = useState([]);
-  const [showPopup, setShowPopup] = useState(false); 
+  const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
     const localUser = JSON.parse(localStorage.getItem('user') || '{}');
@@ -30,19 +29,13 @@ const UserProfile = () => {
       profile_pic: localUser.profile_pic || ''
     });
 
-    fetch(`/api/images/user/${localUser._id}`)
-      .then(res => res.json())
-      .then(data => setImages(data))
-      .catch(err => console.error(err));
 
-    fetch(`/api/reports/user/${localUser._id}`)
-      .then(res => res.json())
-      .then(data => setReports(data))
-      .catch(err => console.error(err));
+
+ 
   }, []);
 
   const handleEdit = () => {
-    setShowPopup(true);  
+    setShowPopup(true);
   };
 
   const handleChange = e => {
@@ -78,18 +71,33 @@ const UserProfile = () => {
         body: JSON.stringify({ ...cleanData, _id: user._id })
       });
 
-      const result = await res.json();
-      if (res.ok) {
+      const contentType = res.headers.get("content-type");
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("Response text:", errorText);
+        toast.error('Failed to update profile.', {
+          position: 'top-center',
+          theme: 'colored',
+        });
+        return;
+      }
+
+      if (contentType && contentType.includes("application/json")) {
+        const result = await res.json();
+
         toast.success('Profile updated successfully! 🎉', {
           position: 'top-center',
           theme: 'colored',
         });
+
         const updatedUser = { ...user, ...cleanData };
-        localStorage.setItem('user', JSON.stringify(updatedUser));
-        setUser(updatedUser);
-        setShowPopup(false);  
+        localStorage.setItem('user', JSON.stringify(updatedUser)); 
+        setUser(updatedUser); 
+        setShowPopup(false);
       } else {
-        toast.error(result.message || 'Failed to update profile.', {
+        const text = await res.text();
+        console.error("Expected JSON but received:", text);
+        toast.error('Unexpected response format.', {
           position: 'top-center',
           theme: 'colored',
         });
@@ -104,7 +112,7 @@ const UserProfile = () => {
   };
 
   const handleClosePopup = () => {
-    setShowPopup(false);  
+    setShowPopup(false);
   };
 
   return (
@@ -116,51 +124,31 @@ const UserProfile = () => {
           src={formData.profile_pic || 'https://via.placeholder.com/150'}
           alt="Profile"
         />
-        
         <div className="info">
-       
+          {!editMode ? (
+            <>
+              <div className="first">
+                <p><strong>Email:</strong> {user.email}</p>
+                <p><strong>Phone:</strong> {user.phone || 'N/A'}</p>
+              </div>
+              <div className="second">
+                <p><strong>Age:</strong> {user.age || 'N/A'}</p>
+                <p><strong>Address:</strong> {user.address || 'N/A'}</p>
+              </div>
 
-          {editMode ? (
-            <>
-              <label>Phone:</label>
-              <input name="phone" value={formData.phone} onChange={handleChange} />
-              <label>Address:</label>
-              <input name="address" value={formData.address} onChange={handleChange} />
-              <label>Age:</label>
-              <input name="age" type="number" value={formData.age} onChange={handleChange} />
-              <label>Profile Picture:</label>
-              <input type="file" accept="image/*" onChange={handleImageUpload} />
-              <button className="edit-btn" onClick={handleSave}>Save Profile</button>
-            </>
-          ) : (
-            <>
-            <div className="first">
-            <p><strong>Email:</strong> {user.email}</p>
-        
-        <p><strong>Phone:</strong> {user.phone || 'N/A'}</p>
-            </div>
-          <div className="second">   
-          <p><strong>Age:</strong> {user.age || 'N/A'}</p>
-              <p><strong>Address:</strong> {user.address || 'N/A'}</p></div>
-           
               <button className="edit-btn" onClick={handleEdit}>Edit Profile</button>
-              <div className="two_button"> <button className="my-report-btn" >My reports</button>
-              
-              <button className="my-xrays" >My Images</button></div>
-             
+              <div className="two_button">
+                <button className="my-report-btn">My Reports</button>
+                <button className="my-xrays">My Images</button>
+              </div>
             </>
-          )}
+          ) : null}
         </div>
       </div>
 
-    
-
-     
-
-      {/* Popup Modal for Edit Profile */}
       {showPopup && (
         <div className="popup-overlay">
-          <div className="popup-content">
+          <div className="popup-content animate-popup">
             <h2>Edit Profile</h2>
             <label>Phone:</label>
             <input name="phone" value={formData.phone} onChange={handleChange} />
@@ -175,7 +163,8 @@ const UserProfile = () => {
           </div>
         </div>
       )}
-      <Background images={arry}/>
+
+      <Background images={arry} />
     </div>
   );
 };

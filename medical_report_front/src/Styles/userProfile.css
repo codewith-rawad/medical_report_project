@@ -49,7 +49,7 @@
     flex-direction: column;
     justify-content: center;
     width: 45%;
-
+    
   }
   .two_button{
     margin-top: 20px;
@@ -68,6 +68,7 @@
     border-radius: 5px;
     background-color:#0a9396;
     outline: none;
+    font-size: 1.1rem;
     
   
   }
@@ -97,77 +98,106 @@
   
   .edit-btn {
     background-color: #0a9396;;
-    color: #005f73;
+    color:white;
   }
   
-  .edit-btn:hover {
-    background-color: #00bcd4;
-    color: white;
-  }
-  
-  .save-btn {
-    background-color: #4caf50;
-    color: white;
-  }
-  
-  .save-btn:hover {
-    background-color: #45a049;
-  }
-  
-  .cancel-btn {
-    background-color: #f44336;
-    color: white;
-  }
-  
-  .cancel-btn:hover {
-    background-color: #e53935;
-  }
-  
- 
   .popup-overlay {
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.4);
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 10;
+    z-index: 999;
+    animation: fadeIn 0.5s ease;
   }
   
   .popup-content {
-    background-color: #ffffff;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
     padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-    width: 400px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 420px;
     text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transform: scale(0.9);
+    animation: popupBounce 0.4s ease-out forwards;
   }
   
-  .popup-content:hover {
-    transform: scale(1.03);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  .popup-content h2 {
+    color: #00bcd4;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
   }
   
   .popup-content input {
     width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    border: none;
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.9);
     font-size: 1rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   }
   
-  .popup-content h2 {
-    margin-bottom: 20px;
-    color: #005f73;
-    font-size: 1.3rem;
+  .save-btn,
+  .cancel-btn {
+    padding: 12px 22px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin: 0 10px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
   }
   
-
+  .save-btn {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    color: white;
+  }
+  
+  .save-btn:hover {
+    background: linear-gradient(135deg, #38f9d7 0%, #43e97b 100%);
+    transform: scale(1.05);
+  }
+  
+  .cancel-btn {
+    background: linear-gradient(135deg, #ff4e50 0%, #f9d423 100%);
+    color: white;
+  }
+  
+  .cancel-btn:hover {
+    background: linear-gradient(135deg, #f9d423 0%, #ff4e50 100%);
+    transform: scale(1.05);
+  }
+  
+  /* Animations */
+  @keyframes popupBounce {
+    0% {
+      transform: scale(0.9);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
   
 
   
@@ -180,5 +210,11 @@
   .second {
     display: flex;
     justify-content: space-between;
+    margin-top: 15px;
+   color: #ffffff;
   }
   
+
+  .username{
+    font-size: 40px;
+  }

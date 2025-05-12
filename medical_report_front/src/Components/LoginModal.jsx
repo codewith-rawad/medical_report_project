@@ -22,14 +22,20 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
       const data = await response.json();
 
       if (data.token) {
-        localStorage.setItem('token', data.token);
-
-        localStorage.setItem('user', JSON.stringify({
+     
+        const userData = {
           name: data.user.name,
           email: data.user.email,
           role: data.user.role,
-          _id: data.user._id
-        }));
+          _id: data.user._id,
+          phone: data.user.phone || '',
+          address: data.user.address || '',
+          age: data.user.age || '',
+          profile_pic: data.user.profile_pic || ''
+        };
+
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(userData));
 
         toast.success('Login successful! 🎉', {
           position: 'top-center',

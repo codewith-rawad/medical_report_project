@@ -7,7 +7,7 @@ import datetime
 auth_bp = Blueprint('auth', __name__)
 bcrypt = Bcrypt()
 
-SECRET_KEY = 'your_secret_key'  
+SECRET_KEY = 'your_secret_key'
 
 
 @auth_bp.route('/signup', methods=['POST'])
@@ -16,7 +16,6 @@ def register():
 
     if not data.get('email') or not data.get('password') or not data.get('name'):
         return jsonify({"message": "Email, name, and password are required"}), 400
-
 
     role = data.get('role', 'user')
 
@@ -29,7 +28,7 @@ def register():
         name=data['name'],
         email=data['email'],
         password=hashed_password,
-        role=role
+        role=role,
     )
     new_user.save()
 
@@ -56,12 +55,20 @@ def login():
         'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=2)
     }, SECRET_KEY, algorithm='HS256')
 
+   
+    user_data = {
+        "_id": str(user["_id"]),
+        "name": user.get("name", ""),
+        "email": user.get("email", ""),
+        "role": user.get("role", ""),
+        "phone": user.get("phone", ""),
+        "address": user.get("address", ""),
+        "age": user.get("age", ""),
+        "profile_pic": user.get("profile_pic", "")
+    }
+
     return jsonify({
         'message': 'Login successful',
         'token': token,
-        'user': {
-            "_id":user["_id"],
-            "name": user["name"],
-            "email": user["email"]
-        }
+        'user': user_data
     }), 200
