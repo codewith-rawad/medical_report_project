@@ -22,20 +22,20 @@ def create_app():
     
   
     from app.routes.auth_routes import auth_bp
-    from app.routes.report_routes import report_bp
+    
     from app.routes.image_routes import image_bp
     from app.routes.profile_routes import profile_bp  
     from app.routes.Admin_route import admin_bp 
     from app.routes.models_route import ml_models_bp
+    from app.routes.report_routes import generate_bp
  
     
     app.register_blueprint(auth_bp, url_prefix="/api")
-    app.register_blueprint(report_bp, url_prefix="/api")
     app.register_blueprint(image_bp, url_prefix="/api")
     app.register_blueprint(profile_bp, url_prefix="/api")  
     app.register_blueprint(admin_bp, url_prefix="/api")  
     app.register_blueprint(ml_models_bp, url_prefix="/api")
-    
+    app.register_blueprint(generate_bp, url_prefix="/api")
 
 
     return app
