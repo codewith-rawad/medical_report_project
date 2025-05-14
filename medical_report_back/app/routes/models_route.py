@@ -1,8 +1,14 @@
+from flask import Blueprint, request, jsonify
+import os
 import base64
+from werkzeug.utils import secure_filename
 from bson import ObjectId
 from app import mongo
+from app.ml_models.extractor import run_selected_models
 
-@models_bp.route('/api/models/extract_keywords', methods=['POST'])
+ml_models_bp = Blueprint('ml_models', __name__)  
+
+@ml_models_bp.route('/api/ml_models/extract_keywords', methods=['POST'])
 def extract_keywords():
     if 'image' not in request.files:
         return jsonify({'error': 'No image uploaded'}), 400
@@ -27,13 +33,11 @@ def extract_keywords():
     try:
         keywords = run_selected_models(temp_path, selected_models)
 
-   
         os.remove(temp_path)
 
-   
         return jsonify({
             'keywords': keywords,
-            'image_base64': image_base64, 
+            'image_base64': image_base64,
             'user_id': user_id
         })
 
