@@ -1,13 +1,6 @@
-from flask import Blueprint, request, jsonify
-from werkzeug.utils import secure_filename
-import os
-from app.models.extractor import run_selected_models
-
-models_bp = Blueprint('models', __name__)
-UPLOAD_FOLDER = 'uploads'
-
-# تأكد من وجود مجلد الصور
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+import base64
+from bson import ObjectId
+from app import mongo
 
 @models_bp.route('/api/models/extract_keywords', methods=['POST'])
 def extract_keywords():
@@ -15,20 +8,34 @@ def extract_keywords():
         return jsonify({'error': 'No image uploaded'}), 400
 
     image = request.files['image']
-    selected_models = request.form.getlist('models') 
+    selected_models = request.form.getlist('models')
+    user_id = request.form.get('user_id')
 
     if not selected_models:
         return jsonify({'error': 'No models selected'}), 400
 
-    filename = secure_filename(image.filename)
-    image_path = os.path.join(UPLOAD_FOLDER, filename)
-    image.save(image_path)
+    if not user_id:
+        return jsonify({'error': 'Missing user ID'}), 400
+
+    image_bytes = image.read()
+    image_base64 = base64.b64encode(image_bytes).decode('utf-8')
+
+    temp_path = f"/tmp/{secure_filename(image.filename)}"
+    with open(temp_path, "wb") as f:
+        f.write(image_bytes)
 
     try:
-        keywords = run_selected_models(image_path, selected_models)
+        keywords = run_selected_models(temp_path, selected_models)
+
+   
+        os.remove(temp_path)
+
+   
         return jsonify({
             'keywords': keywords,
-            'image_path': image_path
+            'image_base64': image_base64, 
+            'user_id': user_id
         })
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500
