@@ -1,0 +1,61 @@
+.gen-container {
+  max-width: 400px;
+  margin: 40px auto;
+  background-color: #e0f7fa;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 0 10px rgba(0, 95, 115, 0.2);
+  font-family: 'Arial', sans-serif;
+}
+
+.gen-title {
+  text-align: center;
+  color: #005f73;
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+}
+
+.gen-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gen-form input[type="file"],
+.gen-form input[type="text"] {
+  padding: 8px;
+  border: 1px solid #aaa;
+  border-radius: 8px;
+}
+
+.checkbox-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.gen-form button {
+  background-color: #005f73;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.gen-form button:hover {
+  background-color: #0a9396;
+}
+
+.keywords-box {
+  margin-top: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+
+.keywords-box h3 {
+  margin-bottom: 8px;
+  color: #005f73;
+}
