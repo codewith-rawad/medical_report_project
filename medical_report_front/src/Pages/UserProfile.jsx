@@ -5,8 +5,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import Background from '../Components/Background';
 import contact1 from '../assets/background2.jpg';
 import contact2 from '../assets/contact2.jpg';
+import { NavLink } from 'react-router-dom'; 
 
 const UserProfile = () => {
+  
   const arry = [contact1, contact2];
   const [user, setUser] = useState({});
   const [formData, setFormData] = useState({
@@ -53,7 +55,7 @@ const UserProfile = () => {
   };
 
   const handleSave = async () => {
-    // التحقق من البيانات المدخلة
+    
     const cleanData = {
       phone: formData.phone.trim() || undefined,
       address: formData.address.trim() || undefined,
@@ -61,7 +63,7 @@ const UserProfile = () => {
       profile_pic: formData.profile_pic || undefined
     };
 
-    // التحقق إذا كانت البيانات المدخلة لا تختلف عن القيم الأصلية
+  
     const isDataUnchanged = 
       cleanData.phone === user.phone &&
       cleanData.address === user.address &&
@@ -73,7 +75,7 @@ const UserProfile = () => {
         position: 'top-center',
         theme: 'colored',
       });
-      return; // إنهاء العملية إذا كانت البيانات لم تتغير
+      return; 
     }
 
     try {
@@ -153,7 +155,14 @@ const UserProfile = () => {
                 <button className="my-report-btn">My Reports</button>
                 <button className="my-xrays">My Images</button>
               </div>
-              <button className="generate_report">Generate Report</button>
+              <button className="generate_report">
+                <NavLink
+            to="/generate-keywords"
+            
+          >
+          Generate Report
+          </NavLink>
+              </button>
             </>
           )}
         </div>

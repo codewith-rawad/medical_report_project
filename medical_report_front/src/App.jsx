@@ -10,6 +10,7 @@ import SignUp from './Components/Signup';
 import About from './Pages/ِAbout';
 import Contact from "./Pages/Contact"
 import Gallery from './Pages/Gallery';
+import GenerateKeywords from './Pages/generate_report';
 import "../src/App.css"
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -85,6 +86,7 @@ function App() {
         <Route path="/About" element={<About />} />
         <Route path="/Contact" element={<Contact />} />
         <Route path="/Gallery" element={<Gallery/>} />
+        <Route path="/generate-keywords" element={<GenerateKeywords />} />
         <Route
           path="/user-profile"
           element={

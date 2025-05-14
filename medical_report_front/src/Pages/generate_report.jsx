@@ -1,12 +1,28 @@
-import React, { useState } from 'react';
-import '../Styles/generate_report.css'
+import React, { useEffect, useState } from 'react';
+import '../Styles/generate_report.css';
+import { useNavigate } from 'react-router-dom';
 
 const GenerateKeywords = () => {
   const [image, setImage] = useState(null);
   const [selectedModels, setSelectedModels] = useState([]);
   const [keywords, setKeywords] = useState([]);
-  const [userId, setUserId] = useState('');
   const [loading, setLoading] = useState(false);
+  const [userId, setUserId] = useState('');
+  const [prompt, setPrompt] = useState('');
+  const [report, setReport] = useState('');
+  const navigate = useNavigate();
+
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) {
+      alert('يجب تسجيل الدخول أولًا');
+      navigate('/login'); 
+    } else {
+      const parsed = JSON.parse(storedUser);
+      setUserId(parsed._id);
+    }
+  }, []);
 
   const handleModelChange = (e) => {
     const value = e.target.value;
@@ -17,10 +33,11 @@ const GenerateKeywords = () => {
     );
   };
 
-  const handleSubmit = async (e) => {
+
+  const handleExtract = async (e) => {
     e.preventDefault();
-    if (!image || selectedModels.length === 0 || !userId) {
-      alert('يرجى رفع صورة وتحديد نموذج ومعرف المستخدم');
+    if (!image || selectedModels.length === 0) {
+      alert('يرجى رفع صورة وتحديد نماذج');
       return;
     }
 
@@ -31,7 +48,7 @@ const GenerateKeywords = () => {
 
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/models/extract_keywords', {
+      const response = await fetch('http://127.0.0.1:5000/api/extract_keywords', {
         method: 'POST',
         body: formData
       });
@@ -40,7 +57,7 @@ const GenerateKeywords = () => {
       if (response.ok) {
         setKeywords(data.keywords || []);
       } else {
-        alert(data.error || 'حدث خطأ أثناء إرسال الطلب');
+        alert(data.error || 'حدث خطأ أثناء استخراج الكلمات');
       }
     } catch (err) {
       console.error(err);
@@ -50,19 +67,42 @@ const GenerateKeywords = () => {
     }
   };
 
+  // ✅ توليد التقرير من الكلمات
+  const handleGenerateReport = async () => {
+    if (keywords.length === 0) {
+      alert('لا توجد كلمات مستخرجة');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:5000/api/reports/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: userId,
+          keywords: keywords,
+          prompt: prompt
+        })
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setReport(data.report);
+      } else {
+        alert(data.error || 'فشل في توليد التقرير');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('خطأ أثناء الاتصال بالخادم');
+    }
+  };
+
   return (
     <div className="gen-container">
       <h2 className="gen-title">استخراج الكلمات المفتاحية</h2>
 
-      <form className="gen-form" onSubmit={handleSubmit}>
+      <form className="gen-form" onSubmit={handleExtract}>
         <input type="file" accept="image/*" onChange={(e) => setImage(e.target.files[0])} />
-
-        <input
-          type="text"
-          placeholder="معرف المستخدم (User ID)"
-          value={userId}
-          onChange={(e) => setUserId(e.target.value)}
-        />
 
         <div className="checkbox-group">
           <label><input type="checkbox" value="yolo" onChange={handleModelChange} /> YOLO</label>
@@ -78,11 +118,23 @@ const GenerateKeywords = () => {
       {keywords.length > 0 && (
         <div className="keywords-box">
           <h3>الكلمات المستخرجة:</h3>
-          <ul>
-            {keywords.map((kw, index) => (
-              <li key={index}>{kw}</li>
-            ))}
-          </ul>
+          <ul>{keywords.map((kw, i) => <li key={i}>{kw}</li>)}</ul>
+
+          <textarea
+            placeholder="اكتب برومبت مخصص إن أردت"
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            rows={4}
+          ></textarea>
+
+          <button onClick={handleGenerateReport}>ولّد التقرير</button>
+        </div>
+      )}
+
+      {report && (
+        <div className="keywords-box">
+          <h3>التقرير الناتج:</h3>
+          <p>{report}</p>
         </div>
       )}
     </div>
