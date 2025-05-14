@@ -8,16 +8,17 @@ import LoginModal from '../src/Components/LoginModal';
 import Navbar from '../src/Components/Navbar';
 import SignUp from './Components/Signup';
 import About from './Pages/ِAbout';
-import Contact from "./Pages/Contact"
+import Contact from "./Pages/Contact";
 import Gallery from './Pages/Gallery';
 import GenerateKeywords from './Pages/generate_report';
-import "../src/App.css"
+import "../src/App.css";
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userRole, setUserRole] = useState('');  
-  const [tokenExpiration, setTokenExpiration] = useState(null);  
+  const [userRole, setUserRole] = useState('');
+  const [tokenExpiration, setTokenExpiration] = useState(null);
   const [showLogin, setShowLogin] = useState(false);
-  const [showSignup, setShowSignup] = useState(false); 
+  const [showSignup, setShowSignup] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -28,17 +29,17 @@ function App() {
         setIsAuthenticated(false);
         setUserRole('');
         setTokenExpiration(null);
-        alert('Session expired');
+        alert("login again please bacause your session is end");
       } else {
         setIsAuthenticated(true);
         setUserRole(decodedToken.role);
-        setTokenExpiration(decodedToken.exp);  
+        setTokenExpiration(decodedToken.exp);
       }
     }
   }, []);
 
   const onLoginSuccess = (token) => {
-    localStorage.setItem('token', token);  
+    localStorage.setItem('token', token);
     const decodedToken = jwtDecode(token);
     setIsAuthenticated(true);
     setUserRole(decodedToken.role);
@@ -54,7 +55,7 @@ function App() {
   };
 
   const onSignupClick = () => {
-    setShowSignup(true); 
+    setShowSignup(true);
   };
 
   return (
@@ -63,51 +64,62 @@ function App() {
         isAuthenticated={isAuthenticated} 
         onLogout={onLogout}
         onLoginClick={() => setShowLogin(true)}
-        onSignupClick={onSignupClick}  
-        userRole={userRole}  
+        onSignupClick={onSignupClick}
+        userRole={userRole}
       />
-      
+
       {showLogin && (
         <LoginModal 
           onLoginSuccess={onLoginSuccess}
           onClose={() => setShowLogin(false)}
         />
       )}
+
       {showSignup && (
         <SignUp
-        
           onClose={() => setShowSignup(false)}
         />
       )}
-
 
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/About" element={<About />} />
         <Route path="/Contact" element={<Contact />} />
-        <Route path="/Gallery" element={<Gallery/>} />
-        <Route path="/generate-keywords" element={<GenerateKeywords />} />
-        <Route
-          path="/user-profile"
+        <Route path="/Gallery" element={<Gallery />} />
+        
+        <Route 
+          path="/generate-keywords" 
+          element={
+            isAuthenticated ? (
+              <GenerateKeywords />
+            ) : (
+              <Navigate to="/" />
+            )
+          } 
+        />
+
+        <Route 
+          path="/user-profile" 
           element={
             isAuthenticated && userRole === 'user' ? (
               <UserProfile />
             ) : (
               <Navigate to="/" />
             )
-          }
+          } 
         />
-        <Route
-          path="/admin"
+
+        <Route 
+          path="/admin" 
           element={
             isAuthenticated && userRole === 'admin' ? (
               <AdminPage />
             ) : (
               <Navigate to="/" />
             )
-          }
+          } 
         />
- 
+
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>

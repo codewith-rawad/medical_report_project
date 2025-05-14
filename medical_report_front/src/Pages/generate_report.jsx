@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import '../Styles/generate_report.css';
 import { useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const GenerateKeywords = () => {
   const [image, setImage] = useState(null);
@@ -10,16 +12,18 @@ const GenerateKeywords = () => {
   const [userId, setUserId] = useState('');
   const [prompt, setPrompt] = useState('');
   const [report, setReport] = useState('');
+  const [showPopup, setShowPopup] = useState(false);
   const navigate = useNavigate();
-
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (!storedUser) {
-      alert('يجب تسجيل الدخول أولًا');
-      navigate('/login'); 
+      navigate('/');
     } else {
       const parsed = JSON.parse(storedUser);
+      if (!parsed._id) {
+        navigate('/');
+      }
       setUserId(parsed._id);
     }
   }, []);
@@ -33,11 +37,12 @@ const GenerateKeywords = () => {
     );
   };
 
-
   const handleExtract = async (e) => {
     e.preventDefault();
     if (!image || selectedModels.length === 0) {
-      alert('يرجى رفع صورة وتحديد نماذج');
+      toast.error('Please upload an image and select at least one model.',{ position: 'top-center',
+        theme: 'colored',})
+      
       return;
     }
 
@@ -56,21 +61,33 @@ const GenerateKeywords = () => {
       const data = await response.json();
       if (response.ok) {
         setKeywords(data.keywords || []);
+        toast.success('Keywords extracted successfully!',{
+             position: 'top-center',
+        theme: 'colored',
+        })
       } else {
-        alert(data.error || 'حدث خطأ أثناء استخراج الكلمات');
+        toast.error(data.error || 'Error extracting keywords',{
+             position: 'top-center',
+        theme: 'colored',
+        })
       }
     } catch (err) {
       console.error(err);
-      alert('فشل الاتصال بالخادم');
+      toast.error('Server connection failed',{
+         position: 'top-center',
+        theme: 'colored',
+      })
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ توليد التقرير من الكلمات
   const handleGenerateReport = async () => {
     if (keywords.length === 0) {
-      alert('لا توجد كلمات مستخرجة');
+      toast.error('No keywords extracted',{
+         position: 'top-center',
+        theme: 'colored',
+      })
       return;
     }
 
@@ -88,18 +105,30 @@ const GenerateKeywords = () => {
       const data = await response.json();
       if (response.ok) {
         setReport(data.report);
+        toast.success('Report generated successfully!',{
+             position: 'top-center',
+        theme: 'colored',
+        })
       } else {
-        alert(data.error || 'فشل في توليد التقرير');
+        toast.error(data.error || 'Failed to generate report',{
+             position: 'top-center',
+        theme: 'colored',
+        })
       }
     } catch (err) {
       console.error(err);
-      alert('خطأ أثناء الاتصال بالخادم');
+      toast.error('Error connecting to server',{
+         position: 'top-center',
+        theme: 'colored',
+      })
     }
   };
 
   return (
     <div className="gen-container">
-      <h2 className="gen-title">استخراج الكلمات المفتاحية</h2>
+      <ToastContainer />
+
+      <h2 className="gen-title">Extract Medical Keywords</h2>
 
       <form className="gen-form" onSubmit={handleExtract}>
         <input type="file" accept="image/*" onChange={(e) => setImage(e.target.files[0])} />
@@ -111,30 +140,42 @@ const GenerateKeywords = () => {
         </div>
 
         <button type="submit" disabled={loading}>
-          {loading ? 'جارٍ التوليد...' : 'استخرج الكلمات'}
+          {loading ? 'Processing...' : 'Extract Keywords'}
         </button>
       </form>
 
       {keywords.length > 0 && (
         <div className="keywords-box">
-          <h3>الكلمات المستخرجة:</h3>
-          <ul>{keywords.map((kw, i) => <li key={i}>{kw}</li>)}</ul>
+          <button onClick={() => setShowPopup(true)} className="keyword-btn">
+            Show Extracted Keywords ({keywords.length})
+          </button>
 
           <textarea
-            placeholder="اكتب برومبت مخصص إن أردت"
+            placeholder="Optional: Write your own prompt"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             rows={4}
           ></textarea>
 
-          <button onClick={handleGenerateReport}>ولّد التقرير</button>
+          <button onClick={handleGenerateReport}>Generate Report</button>
         </div>
       )}
 
       {report && (
         <div className="keywords-box">
-          <h3>التقرير الناتج:</h3>
+          <h3>Generated Report:</h3>
           <p>{report}</p>
+        </div>
+      )}
+
+      {/* Popup on demand */}
+      {showPopup && (
+        <div className="popup-overlay" onClick={() => setShowPopup(false)}>
+          <div className="popup-box" onClick={(e) => e.stopPropagation()}>
+            <h3>Extracted Keywords</h3>
+            <ul>{keywords.map((kw, i) => <li key={i}>{kw}</li>)}</ul>
+            <button onClick={() => setShowPopup(false)}>Close</button>
+          </div>
         </div>
       )}
     </div>

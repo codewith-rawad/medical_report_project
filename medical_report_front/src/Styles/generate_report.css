@@ -1,61 +1,186 @@
+/* خلفية عامة مع لون متدرج ناعم */
 .gen-container {
-  max-width: 400px;
-  margin: 40px auto;
-  background-color: #e0f7fa;
-  padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 0 10px rgba(0, 95, 115, 0.2);
-  font-family: 'Arial', sans-serif;
+  min-height: 100vh;
+  padding: 2rem;
+  background: linear-gradient(to bottom, #0f172a, #1e293b);
+  color: #e0f7fa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeIn 1.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .gen-title {
-  text-align: center;
-  color: #005f73;
-  margin-bottom: 20px;
-  font-size: 1.2rem;
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  color: #00bcd4;
+  text-shadow: 1px 1px 3px #000;
 }
 
 .gen-form {
+  background-color: #1e3a5f;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 24px rgba(0, 255, 255, 0.2);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 1rem;
+  width: 100%;
+  max-width: 500px;
+  border: 1px solid #00bcd4;
 }
 
-.gen-form input[type="file"],
-.gen-form input[type="text"] {
-  padding: 8px;
-  border: 1px solid #aaa;
-  border-radius: 8px;
+.gen-form input[type="file"] {
+  background-color: #334155;
+  color: #e0f7fa;
+  padding: 0.7rem;
+  border-radius: 0.75rem;
+  border: none;
+  transition: background-color 0.3s;
+}
+
+.gen-form input[type="file"]:hover {
+  background-color: #475569;
+}
+
+.checkbox-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
 }
 
 .checkbox-group label {
-  display: block;
-  margin-bottom: 5px;
+  background-color: #334155;
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  color: #e0f7fa;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.checkbox-group label:hover {
+  background-color: #3b82f6;
 }
 
 .gen-form button {
-  background-color: #005f73;
-  color: white;
+  padding: 0.8rem 1.2rem;
+  background-color: #00bcd4;
   border: none;
-  padding: 10px;
-  border-radius: 8px;
-  cursor: pointer;
+  border-radius: 1rem;
+  color: #0f172a;
   font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.3s;
 }
 
 .gen-form button:hover {
-  background-color: #0a9396;
+  background-color: #26c6da;
+  transform: scale(1.05);
 }
 
 .keywords-box {
-  margin-top: 20px;
-  background-color: #fff;
-  border-radius: 10px;
-  padding: 10px;
-  border: 1px solid #ccc;
+  background-color: #1e3a5f;
+  border: 1px solid #00bcd4;
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border-radius: 1.5rem;
+  width: 100%;
+  max-width: 700px;
+  box-shadow: 0 6px 20px rgba(0, 255, 255, 0.2);
+  animation: fadeIn 1s ease;
 }
 
-.keywords-box h3 {
-  margin-bottom: 8px;
-  color: #005f73;
+.keyword-btn {
+  background-color: #06b6d4;
+  color: #0f172a;
+  font-weight: bold;
+  padding: 0.6rem 1rem;
+  border-radius: 1rem;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.keyword-btn:hover {
+  background-color: #67e8f9;
+  transform: scale(1.05);
+}
+
+textarea {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #334155;
+  color: #e0f7fa;
+  border: 1px solid #00bcd4;
+  border-radius: 1rem;
+  resize: vertical;
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(15, 23, 42, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.popup-box {
+  background-color: #1e3a5f;
+  padding: 2rem;
+  border-radius: 1rem;
+  color: #e0f7fa;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 6px 20px rgba(0, 255, 255, 0.3);
+  text-align: center;
+}
+
+.popup-box ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 1rem;
+}
+
+.popup-box li {
+  background-color: #334155;
+  margin: 0.3rem 0;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.popup-box button {
+  margin-top: 1rem;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 0.8rem;
+  background-color: #00bcd4;
+  color: #0f172a;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.popup-box button:hover {
+  background-color: #67e8f9;
 }
