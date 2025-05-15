@@ -22,41 +22,41 @@ def generate_report():
     if not user_id or not keywords:
         return jsonify({"error": "User ID and keywords are required"}), 400
 
-    # جلب اسم المستخدم
+  
     user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
     if not user:
         return jsonify({"error": "User not found"}), 404
     user_name = user.get("name", "Unknown User")
 
-    # تجهيز البرومبت
     prompt = (
-        "You are a professional radiologist. Using the following medical keywords extracted from a chest X-ray:\n\n"
-        + ", ".join(keywords) +
-        "\n\nGenerate a formal, well-structured chest X-ray medical report. Do not include any disclaimers, questions, or conversational phrases. Do not use asterisks (*). Focus only on clinically relevant findings and conclusions."
-    )
+    "You are a professional radiologist. Based on the following medical keywords extracted from a chest X-ray:\n\n"
+    + ", ".join(keywords) +
+    "\n\nWrite a concise medical interpretation minimum(100 word), explaining the findings and suggesting appropriate medications or treatments if applicable. Focus only on clinical relevance. Avoid any disclaimers, introductions, or conversational language."
+)
+
+
 
     try:
-        # توليد التقرير من Gemini
+        
         response = gemini_model.generate_content(prompt)
         report_text = response.text.strip()
 
-        # تحميل القالب وتعبئة البيانات
-        template_path = "templates/medical/template.docx"
+        
+        template_path = "templates/MEDICAL_REPORT.docx"
         doc = DocxTemplate(template_path)
         context = {
-            "user_name": user_name,
-            "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "report_text": report_text
+            "patient_name": user_name,
+            "date": datetime.now().strftime("%Y-%m-%d"),
+            "generated_report": report_text
         }
         doc.render(context)
 
-        # حفظ الملف في BytesIO
+
         word_io = io.BytesIO()
         doc.save(word_io)
         word_bytes = word_io.getvalue()
         word_base64 = base64.b64encode(word_bytes).decode("utf-8")
 
-        # حفظ التقرير في MongoDB
         report_doc = {
             "user_id": ObjectId(user_id),
             "report_text": report_text,
@@ -67,7 +67,8 @@ def generate_report():
 
         return jsonify({
             "report": report_text,
-            "message": "Report generated and saved successfully."
+            "message": "Report generated and saved successfully.",
+            "docx_base64": word_base64
         })
 
     except Exception as e:

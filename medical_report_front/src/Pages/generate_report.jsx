@@ -18,6 +18,7 @@ const GenerateKeywords = () => {
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState('');
   const [report, setReport] = useState('');
+  const [docxBase64, setDocxBase64] = useState(null);  // حفظ ملف الوورد من السيرفر
   const [showPopup, setShowPopup] = useState(false);
   const navigate = useNavigate();
 
@@ -27,9 +28,7 @@ const GenerateKeywords = () => {
       navigate('/');
     } else {
       const parsed = JSON.parse(storedUser);
-      if (!parsed._id) {
-        navigate('/');
-      }
+      if (!parsed._id) navigate('/');
       setUserId(parsed._id);
     }
   }, []);
@@ -37,17 +36,14 @@ const GenerateKeywords = () => {
   const handleModelChange = (e) => {
     const value = e.target.value;
     setSelectedModels((prev) =>
-      prev.includes(value) ? prev.filter((model) => model !== value) : [...prev, value]
+      prev.includes(value) ? prev.filter((m) => m !== value) : [...prev, value]
     );
   };
 
   const handleExtract = async (e) => {
     e.preventDefault();
     if (!image || selectedModels.length === 0) {
-      toast.error('Please upload an image and select at least one model.', {
-        position: 'top-center',
-        theme: 'colored',
-      });
+      toast.error('Please upload an image and select at least one model.', { position: 'top-center' });
       return;
     }
 
@@ -66,22 +62,12 @@ const GenerateKeywords = () => {
       const data = await response.json();
       if (response.ok) {
         setKeywords(data.keywords || []);
-        toast.success('Keywords extracted successfully!', {
-          position: 'top-center',
-          theme: 'colored',
-        });
+        toast.success('Keywords extracted successfully!', { position: 'top-center' });
       } else {
-        toast.error(data.error || 'Failed to extract keywords.', {
-          position: 'top-center',
-          theme: 'colored',
-        });
+        toast.error(data.error || 'Failed to extract keywords.', { position: 'top-center' });
       }
     } catch (err) {
-      console.error(err);
-      toast.error('Server connection failed.', {
-        position: 'top-center',
-        theme: 'colored',
-      });
+      toast.error('Server connection failed.', { position: 'top-center' });
     } finally {
       setLoading(false);
     }
@@ -89,10 +75,7 @@ const GenerateKeywords = () => {
 
   const handleGenerateReport = async () => {
     if (keywords.length === 0) {
-      toast.error('No keywords extracted yet.', {
-        position: 'top-center',
-        theme: 'colored',
-      });
+      toast.error('No keywords extracted yet.', { position: 'top-center' });
       return;
     }
 
@@ -101,51 +84,43 @@ const GenerateKeywords = () => {
       const response = await fetch('http://127.0.0.1:5000/api/reports/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user_id: userId,
-          keywords: keywords
-        })
+        body: JSON.stringify({ user_id: userId, keywords })
       });
 
       const data = await response.json();
       if (response.ok) {
         setReport(data.report);
-        toast.success('Report generated successfully!', {
-          position: 'top-center',
-          theme: 'colored',
-        });
+        setDocxBase64(data.docx_base64 || null);  // حفظ ملف الوورد المستلم من السيرفر
+        toast.success('Report generated successfully!', { position: 'top-center' });
       } else {
-        toast.error(data.error || 'Failed to generate report.', {
-          position: 'top-center',
-          theme: 'colored',
-        });
+        toast.error(data.error || 'Failed to generate report.', { position: 'top-center' });
       }
     } catch (err) {
-      console.error(err);
-      toast.error('Server connection failed.', {
-        position: 'top-center',
-        theme: 'colored',
-      });
+      toast.error('Server connection failed.', { position: 'top-center' });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDownloadWord = () => {
-    const doc = new Document({
-      sections: [
-        {
-          children: [new Paragraph(report)],
-        },
-      ],
-    });
-
-    Packer.toBlob(doc).then((blob) => {
-      saveAs(blob, 'report.docx');
-    });
+  // تحميل ملف الوورد من الـ Base64 المستلم من السيرفر
+  const downloadDocxFromBase64 = (base64String, filename) => {
+    if (!base64String) {
+      toast.error('No Word document available for download.', { position: 'top-center' });
+      return;
+    }
+    const linkSource = `data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,${base64String}`;
+    const downloadLink = document.createElement("a");
+    downloadLink.href = linkSource;
+    downloadLink.download = filename;
+    downloadLink.click();
   };
 
+  // تحميل ملف PDF من نص التقرير
   const handleDownloadPDF = () => {
+    if (!report) {
+      toast.error('No report to download.', { position: 'top-center' });
+      return;
+    }
     const pdf = new jsPDF();
     pdf.text(report, 10, 10);
     pdf.save('report.pdf');
@@ -184,10 +159,16 @@ const GenerateKeywords = () => {
       {report && (
         <div className="report-box">
           <h3>Generated Report:</h3>
-          <textarea value={report} onChange={(e) => setReport(e.target.value)} rows={6} />
+          <textarea
+            value={report}
+            onChange={(e) => setReport(e.target.value)}
+            rows={6}
+          />
           <div className="download-buttons">
             <button onClick={handleDownloadPDF}>Download as PDF</button>
-            <button onClick={handleDownloadWord}>Download as Word</button>
+            <button onClick={() => downloadDocxFromBase64(docxBase64, 'report.docx')}>
+              Download Word (with template)
+            </button>
           </div>
         </div>
       )}
