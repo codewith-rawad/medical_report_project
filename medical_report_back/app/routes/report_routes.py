@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from bson import ObjectId
-from reportlab.lib.pagesizes import A4
-from reportlab.pdfgen import canvas
+from datetime import datetime
+from docxtpl import DocxTemplate
 import io
 import base64
 import google.generativeai as genai
@@ -9,7 +9,7 @@ from app import mongo
 
 generate_bp = Blueprint('generate', __name__)
 
-# Configure Gemini API
+# Gemini API Key
 genai.configure(api_key="AIzaSyDzLEvTu38M9E67pG5crEvYVSy04mO2NGM")
 gemini_model = genai.GenerativeModel("gemini-1.5-flash")
 
@@ -22,40 +22,46 @@ def generate_report():
     if not user_id or not keywords:
         return jsonify({"error": "User ID and keywords are required"}), 400
 
-    # Create prompt for Gemini
+    # جلب اسم المستخدم
+    user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    user_name = user.get("name", "Unknown User")
+
+    # تجهيز البرومبت
     prompt = (
-        "You are an expert radiologist. Based on the following medical keywords extracted from a chest X-ray image:\n\n"
+        "You are a professional radiologist. Using the following medical keywords extracted from a chest X-ray:\n\n"
         + ", ".join(keywords) +
-        "\n\nGenerate a professional, detailed medical report using clear and precise medical language suitable for documentation."
+        "\n\nGenerate a formal, well-structured chest X-ray medical report. Do not include any disclaimers, questions, or conversational phrases. Do not use asterisks (*). Focus only on clinically relevant findings and conclusions."
     )
 
     try:
-        # Call Gemini API
+        # توليد التقرير من Gemini
         response = gemini_model.generate_content(prompt)
         report_text = response.text.strip()
 
-        # Generate PDF from the report
-        pdf_buffer = io.BytesIO()
-        p = canvas.Canvas(pdf_buffer, pagesize=A4)
-        width, height = A4
-        y = height - 50
+        # تحميل القالب وتعبئة البيانات
+        template_path = "templates/medical/template.docx"
+        doc = DocxTemplate(template_path)
+        context = {
+            "user_name": user_name,
+            "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "report_text": report_text
+        }
+        doc.render(context)
 
-        for line in report_text.split('\n'):
-            p.drawString(40, y, line.strip())
-            y -= 18
-            if y < 50:
-                p.showPage()
-                y = height - 50
+        # حفظ الملف في BytesIO
+        word_io = io.BytesIO()
+        doc.save(word_io)
+        word_bytes = word_io.getvalue()
+        word_base64 = base64.b64encode(word_bytes).decode("utf-8")
 
-        p.save()
-        pdf_bytes = pdf_buffer.getvalue()
-        pdf_base64 = base64.b64encode(pdf_bytes).decode('utf-8')
-
-        # Save to MongoDB
+        # حفظ التقرير في MongoDB
         report_doc = {
             "user_id": ObjectId(user_id),
             "report_text": report_text,
-            "pdf_base64": pdf_base64
+            "docx_base64": word_base64,
+            "created_at": datetime.utcnow()
         }
         mongo.db.reports.insert_one(report_doc)
 

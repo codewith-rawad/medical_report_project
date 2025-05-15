@@ -96,6 +96,7 @@ const GenerateKeywords = () => {
       return;
     }
 
+    setLoading(true);
     try {
       const response = await fetch('http://127.0.0.1:5000/api/reports/generate', {
         method: 'POST',
@@ -125,9 +126,10 @@ const GenerateKeywords = () => {
         position: 'top-center',
         theme: 'colored',
       });
+    } finally {
+      setLoading(false);
     }
   };
-  
 
   const handleDownloadWord = () => {
     const doc = new Document({
@@ -164,7 +166,7 @@ const GenerateKeywords = () => {
         </div>
 
         <button type="submit" disabled={loading}>
-          {loading ? 'Processing...' : 'Extract Keywords'}
+          {loading ? <div className="loader" /> : 'Extract Keywords'}
         </button>
       </form>
 
@@ -173,7 +175,9 @@ const GenerateKeywords = () => {
           <button onClick={() => setShowPopup(true)} className="keyword-btn">
             Show Extracted Keywords ({keywords.length})
           </button>
-          <button onClick={handleGenerateReport}>Generate Report</button>
+          <button onClick={handleGenerateReport} disabled={loading}>
+            {loading ? <div className="loader" /> : 'Generate Report'}
+          </button>
         </div>
       )}
 
