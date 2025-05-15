@@ -3,9 +3,6 @@ import '../Styles/generate_report.css';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { saveAs } from 'file-saver';
-import { Document, Packer, Paragraph } from 'docx';
-import jsPDF from 'jspdf';
 import Back1 from '../assets/about1.avif';
 import Back2 from '../assets/about2.jpg';
 import Background from '../Components/Background';
@@ -18,7 +15,8 @@ const GenerateKeywords = () => {
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState('');
   const [report, setReport] = useState('');
-  const [docxBase64, setDocxBase64] = useState(null);  // حفظ ملف الوورد من السيرفر
+  const [docxBase64, setDocxBase64] = useState(null);
+  const [pdfBase64, setPdfBase64] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const navigate = useNavigate();
 
@@ -31,7 +29,7 @@ const GenerateKeywords = () => {
       if (!parsed._id) navigate('/');
       setUserId(parsed._id);
     }
-  }, []);
+  }, [navigate]);
 
   const handleModelChange = (e) => {
     const value = e.target.value;
@@ -56,9 +54,8 @@ const GenerateKeywords = () => {
     try {
       const response = await fetch('http://127.0.0.1:5000/api/extract_keywords', {
         method: 'POST',
-        body: formData
+        body: formData,
       });
-
       const data = await response.json();
       if (response.ok) {
         setKeywords(data.keywords || []);
@@ -78,19 +75,18 @@ const GenerateKeywords = () => {
       toast.error('No keywords extracted yet.', { position: 'top-center' });
       return;
     }
-
     setLoading(true);
     try {
       const response = await fetch('http://127.0.0.1:5000/api/reports/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId, keywords })
+        body: JSON.stringify({ user_id: userId, keywords }),
       });
-
       const data = await response.json();
       if (response.ok) {
         setReport(data.report);
-        setDocxBase64(data.docx_base64 || null);  // حفظ ملف الوورد المستلم من السيرفر
+        setDocxBase64(data.docx_base64 || null);
+        setPdfBase64(data.pdf_base64 || null);
         toast.success('Report generated successfully!', { position: 'top-center' });
       } else {
         toast.error(data.error || 'Failed to generate report.', { position: 'top-center' });
@@ -102,28 +98,30 @@ const GenerateKeywords = () => {
     }
   };
 
-  // تحميل ملف الوورد من الـ Base64 المستلم من السيرفر
+  // تحميل ملف Word من Base64
   const downloadDocxFromBase64 = (base64String, filename) => {
     if (!base64String) {
       toast.error('No Word document available for download.', { position: 'top-center' });
       return;
     }
     const linkSource = `data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,${base64String}`;
-    const downloadLink = document.createElement("a");
+    const downloadLink = document.createElement('a');
     downloadLink.href = linkSource;
     downloadLink.download = filename;
     downloadLink.click();
   };
 
-  // تحميل ملف PDF من نص التقرير
-  const handleDownloadPDF = () => {
-    if (!report) {
-      toast.error('No report to download.', { position: 'top-center' });
+  // تحميل ملف PDF من Base64
+  const downloadPdfFromBase64 = (base64String, filename) => {
+    if (!base64String) {
+      toast.error('No PDF document available for download.', { position: 'top-center' });
       return;
     }
-    const pdf = new jsPDF();
-    pdf.text(report, 10, 10);
-    pdf.save('report.pdf');
+    const linkSource = `data:application/pdf;base64,${base64String}`;
+    const downloadLink = document.createElement('a');
+    downloadLink.href = linkSource;
+    downloadLink.download = filename;
+    downloadLink.click();
   };
 
   return (
@@ -165,7 +163,9 @@ const GenerateKeywords = () => {
             rows={6}
           />
           <div className="download-buttons">
-            <button onClick={handleDownloadPDF}>Download as PDF</button>
+            <button onClick={() => downloadPdfFromBase64(pdfBase64, 'report.pdf')}>
+              Download PDF
+            </button>
             <button onClick={() => downloadDocxFromBase64(docxBase64, 'report.docx')}>
               Download Word (with template)
             </button>
