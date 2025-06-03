@@ -6,6 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Back1 from '../assets/about1.avif';
 import Back2 from '../assets/about2.jpg';
 import Background from '../Components/Background';
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
 const GenerateKeywords = () => {
   const backgrounds = [Back1, Back2];
@@ -18,9 +19,21 @@ const GenerateKeywords = () => {
   const [docxBase64, setDocxBase64] = useState(null);
   const [pdfBase64, setPdfBase64] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
+
+  const [patientName, setPatientName] = useState('');
+  const [age, setAge] = useState('');
+  const [clinicalCase, setClinicalCase] = useState('');
+
+  const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } =
+    useSpeechRecognition();
+
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!browserSupportsSpeechRecognition) {
+      toast.error('Browser does not support speech recognition.');
+    }
+
     const storedUser = localStorage.getItem('user');
     if (!storedUser) {
       navigate('/');
@@ -29,7 +42,28 @@ const GenerateKeywords = () => {
       if (!parsed._id) navigate('/');
       setUserId(parsed._id);
     }
-  }, [navigate]);
+  }, [navigate, browserSupportsSpeechRecognition]);
+
+  const startListening = () => {
+    resetTranscript();
+    SpeechRecognition.startListening({ continuous: false, language: 'en-US' });
+  };
+
+  const stopListening = () => {
+    SpeechRecognition.stopListening();
+    parseTranscript(transcript);
+  };
+
+  const parseTranscript = (text) => {
+    const lower = text.toLowerCase();
+    const nameMatch = lower.match(/name is ([a-z\s]+)/);
+    const ageMatch = lower.match(/age is (\d{1,3})/);
+    const caseMatch = lower.match(/case is (.+)/);
+
+    if (nameMatch) setPatientName(nameMatch[1].trim());
+    if (ageMatch) setAge(ageMatch[1].trim());
+    if (caseMatch) setClinicalCase(caseMatch[1].trim());
+  };
 
   const handleModelChange = (e) => {
     const value = e.target.value;
@@ -80,7 +114,13 @@ const GenerateKeywords = () => {
       const response = await fetch('http://127.0.0.1:5000/api/reports/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId, keywords }),
+        body: JSON.stringify({
+          user_id: userId,
+          keywords,
+          patient_name: patientName,
+          age,
+          clinical_case: clinicalCase
+        }),
       });
       const data = await response.json();
       if (response.ok) {
@@ -98,7 +138,6 @@ const GenerateKeywords = () => {
     }
   };
 
-  // تحميل ملف Word من Base64
   const downloadDocxFromBase64 = (base64String, filename) => {
     if (!base64String) {
       toast.error('No Word document available for download.', { position: 'top-center' });
@@ -111,7 +150,6 @@ const GenerateKeywords = () => {
     downloadLink.click();
   };
 
-  // تحميل ملف PDF من Base64
   const downloadPdfFromBase64 = (base64String, filename) => {
     if (!base64String) {
       toast.error('No PDF document available for download.', { position: 'top-center' });
@@ -128,6 +166,22 @@ const GenerateKeywords = () => {
     <div className="gen-container">
       <ToastContainer />
       <h2 className="gen-title">Medical Report Generation</h2>
+
+      <div className="voice-input-section">
+        <h3>Patient Info (via Voice) </h3>
+        <button className="listen-btn" onClick={startListening}>🎤 Start Speaking</button>
+        <button className="stop-btn" onClick={stopListening}>🛑 Stop & Fill</button>
+        <p>Transcript: <i>{transcript}</i></p>
+
+        <label>Patient Name:</label>
+        <input type="text" value={patientName} onChange={(e) => setPatientName(e.target.value)} />
+
+        <label>Age:</label>
+        <input type="number" value={age} onChange={(e) => setAge(e.target.value)} />
+
+        <label>Clinical Case:</label>
+        <textarea value={clinicalCase} onChange={(e) => setClinicalCase(e.target.value)} rows={3} />
+      </div>
 
       <form className="gen-form" onSubmit={handleExtract}>
         <input type="file" accept="image/*" onChange={(e) => setImage(e.target.files[0])} />
@@ -157,18 +211,10 @@ const GenerateKeywords = () => {
       {report && (
         <div className="report-box">
           <h3>Generated Report:</h3>
-          <textarea
-            value={report}
-            onChange={(e) => setReport(e.target.value)}
-            rows={6}
-          />
+          <textarea value={report} onChange={(e) => setReport(e.target.value)} rows={6} />
           <div className="download-buttons">
-            <button onClick={() => downloadPdfFromBase64(pdfBase64, 'report.pdf')}>
-              Download PDF
-            </button>
-            <button onClick={() => downloadDocxFromBase64(docxBase64, 'report.docx')}>
-              Download Word (with template)
-            </button>
+            <button onClick={() => downloadPdfFromBase64(pdfBase64, 'report.pdf')}>Download PDF</button>
+            <button onClick={() => downloadDocxFromBase64(docxBase64, 'report.docx')}>Download Word</button>
           </div>
         </div>
       )}
