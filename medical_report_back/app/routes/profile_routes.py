@@ -17,7 +17,7 @@ def update_profile():
         return jsonify({"message": "User not found"}), 404
 
     updates = {}
-    for field in ['phone', 'address', 'age', 'profile_pic']:
+    for field in ['phone', 'address', 'age', 'profile_pic','specialty']:
         value = data.get(field)
         if value:
             updates[field] = value

@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import '../Styles/userProfile.css';
-import { toast, ToastContainer } from 'react-toastify'; 
-import 'react-toastify/dist/ReactToastify.css'; 
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Background from '../Components/Background';
 import contact1 from '../assets/background2.jpg';
 import contact2 from '../assets/contact2.jpg';
-import { NavLink } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 
 const UserProfile = () => {
-  
+  const navigate = useNavigate();
   const arry = [contact1, contact2];
   const [user, setUser] = useState({});
   const [formData, setFormData] = useState({
     phone: '',
     address: '',
     age: '',
-    profile_pic: ''
+    profile_pic: '',
+    specialty: ''
   });
   const [editMode, setEditMode] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
@@ -23,12 +24,12 @@ const UserProfile = () => {
   useEffect(() => {
     const localUser = JSON.parse(localStorage.getItem('user') || '{}');
     setUser(localUser);
-
     setFormData({
       phone: localUser.phone || '',
       address: localUser.address || '',
       age: localUser.age || '',
-      profile_pic: localUser.profile_pic || ''
+      profile_pic: localUser.profile_pic || '',
+      specialty: localUser.specialty || ''
     });
   }, []);
 
@@ -55,27 +56,27 @@ const UserProfile = () => {
   };
 
   const handleSave = async () => {
-    
     const cleanData = {
       phone: formData.phone.trim() || undefined,
       address: formData.address.trim() || undefined,
       age: formData.age.trim() || undefined,
-      profile_pic: formData.profile_pic || undefined
+      profile_pic: formData.profile_pic || undefined,
+      specialty: formData.specialty.trim() || undefined
     };
 
-  
-    const isDataUnchanged = 
+    const isDataUnchanged =
       cleanData.phone === user.phone &&
       cleanData.address === user.address &&
       cleanData.age === user.age &&
-      cleanData.profile_pic === user.profile_pic;
+      cleanData.profile_pic === user.profile_pic &&
+      cleanData.specialty === user.specialty;
 
     if (isDataUnchanged) {
       toast.info('No changes made to the profile.', {
         position: 'top-center',
-        theme: 'colored',
+        theme: 'colored'
       });
-      return; 
+      return;
     }
 
     try {
@@ -85,42 +86,31 @@ const UserProfile = () => {
         body: JSON.stringify({ ...cleanData, _id: user._id })
       });
 
-      const contentType = res.headers.get("content-type");
       if (!res.ok) {
         const errorText = await res.text();
         console.error("Response text:", errorText);
         toast.error('Failed to update profile.', {
           position: 'top-center',
-          theme: 'colored',
+          theme: 'colored'
         });
         return;
       }
 
-      if (contentType && contentType.includes("application/json")) {
-        const result = await res.json();
+      const result = await res.json();
+      toast.success('Profile updated successfully! 🎉', {
+        position: 'top-center',
+        theme: 'colored'
+      });
 
-        toast.success('Profile updated successfully! 🎉', {
-          position: 'top-center',
-          theme: 'colored',
-        });
-
-        const updatedUser = { ...user, ...cleanData };
-        localStorage.setItem('user', JSON.stringify(updatedUser)); 
-        setUser(updatedUser); 
-        setShowPopup(false);
-      } else {
-        const text = await res.text();
-        console.error("Expected JSON but received:", text);
-        toast.error('Unexpected response format.', {
-          position: 'top-center',
-          theme: 'colored',
-        });
-      }
+      const updatedUser = { ...user, ...cleanData };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      setUser(updatedUser);
+      setShowPopup(false);
     } catch (error) {
       console.error(error);
       toast.error('An error occurred while updating.', {
         position: 'top-center',
-        theme: 'colored',
+        theme: 'colored'
       });
     }
   };
@@ -129,9 +119,14 @@ const UserProfile = () => {
     setShowPopup(false);
   };
 
+  const handleAddPatient = () => {
+    localStorage.setItem('doctorId', user._id);
+    navigate('/add-patient');
+  };
+
   return (
     <div className="page-container">
-      <h1 className="username">Welcome, {user.name}</h1>
+      <h1 className="username">Welcome Dr. {user.name}</h1>
       <div className="profile-card">
         <img
           className="profile-pic"
@@ -149,20 +144,30 @@ const UserProfile = () => {
                 <p><strong>Age:</strong> {user.age || 'N/A'}</p>
                 <p><strong>Address:</strong> {user.address || 'N/A'}</p>
               </div>
+              <div className="third">
+                <p><strong>Specialty:</strong> {user.specialty || 'N/A'}</p>
+              </div>
 
               <button className="edit-btn" onClick={handleEdit}>Edit Profile</button>
+
               <div className="two_button">
-                <button className="my-report-btn">My Reports</button>
-                <button className="my-xrays">My Images</button>
+                <button className="my-report-btn" onClick={handleAddPatient}>
+                  Add Patient
+                </button>
+
+                {/* <button className="generate_report" onClick={() => navigate('/generate-keywords')}>
+                  Generate Report
+                </button> */}
+ 
+
+
+
+  <button className="view-patients-btn" onClick={() => navigate('/patients')}>
+    View Patients
+  </button>
+
+
               </div>
-              <button className="generate_report">
-                <NavLink
-            to="/generate-keywords"
-            
-          >
-          Generate Report
-          </NavLink>
-              </button>
             </>
           )}
         </div>
@@ -178,6 +183,8 @@ const UserProfile = () => {
             <input name="address" value={formData.address} onChange={handleChange} />
             <label>Age:</label>
             <input name="age" type="number" value={formData.age} onChange={handleChange} />
+            <label>Specialty:</label>
+            <input name="specialty" value={formData.specialty} onChange={handleChange} />
             <label>Profile Picture:</label>
             <input type="file" accept="image/*" onChange={handleImageUpload} />
             <button className="save-btn" onClick={handleSave}>Save</button>
@@ -187,7 +194,6 @@ const UserProfile = () => {
       )}
 
       <Background images={arry} />
-
       <ToastContainer />
     </div>
   );

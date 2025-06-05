@@ -44,14 +44,14 @@ const SignUp = ({ onClose }) => {
 
       const data = await response.json();
 
-      if (data.message === 'User created successfully') {
+      if (data.message === "Doctor account created successfully") {
         toast.success('Sign up successful! 🎉', {
           position: 'top-center',
           theme: 'colored',
         });
         setTimeout(() => {
           onClose();
-        }, 2000); // غلق النافذة بعد 2 ثانية
+        }, 2000);
       } else {
         toast.error(`Error: ${data.message}`, {
           position: 'top-center',

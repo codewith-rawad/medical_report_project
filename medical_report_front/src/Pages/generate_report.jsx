@@ -49,20 +49,28 @@ const GenerateKeywords = () => {
     SpeechRecognition.startListening({ continuous: false, language: 'en-US' });
   };
 
-  const stopListening = () => {
+  const stopListening = async () => {
     SpeechRecognition.stopListening();
-    parseTranscript(transcript);
-  };
 
-  const parseTranscript = (text) => {
-    const lower = text.toLowerCase();
-    const nameMatch = lower.match(/name is ([a-z\s]+)/);
-    const ageMatch = lower.match(/age is (\d{1,3})/);
-    const caseMatch = lower.match(/case is (.+)/);
+    try {
+      const response = await fetch('http://127.0.0.1:5000/api/parse_patient_info', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ transcript }),
+      });
 
-    if (nameMatch) setPatientName(nameMatch[1].trim());
-    if (ageMatch) setAge(ageMatch[1].trim());
-    if (caseMatch) setClinicalCase(caseMatch[1].trim());
+      const data = await response.json();
+      if (response.ok) {
+        setPatientName(data.patient_name);
+        setAge(data.age);
+        setClinicalCase(data.clinical_case);
+        toast.success('Patient info extracted successfully!', { position: 'top-center' });
+      } else {
+        toast.error(data.message || 'Failed to parse transcript', { position: 'top-center' });
+      }
+    } catch (error) {
+      toast.error('Error connecting to NLP backend.', { position: 'top-center' });
+    }
   };
 
   const handleModelChange = (e) => {
@@ -171,7 +179,7 @@ const GenerateKeywords = () => {
         <h3>Patient Info (via Voice) </h3>
         <button className="listen-btn" onClick={startListening}>🎤 Start Speaking</button>
         <button className="stop-btn" onClick={stopListening}>🛑 Stop & Fill</button>
-        <p>Transcript: <i>{transcript}</i></p>
+        <p>Transcript: <i>{transcript} </i></p>
 
         <label>Patient Name:</label>
         <input type="text" value={patientName} onChange={(e) => setPatientName(e.target.value)} />

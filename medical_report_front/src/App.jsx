@@ -11,6 +11,8 @@ import About from './Pages/ِAbout';
 import Contact from "./Pages/Contact";
 import Gallery from './Pages/Gallery';
 import GenerateKeywords from './Pages/generate_report';
+import AddPatient from './Pages/Patient';
+import PatientsList from './Pages/patientsList';
 import "../src/App.css";
 
 function App() {
@@ -23,17 +25,25 @@ function App() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      const decodedToken = jwtDecode(token);
-      if (decodedToken.exp * 1000 < Date.now()) {
+      try {
+        const decodedToken = jwtDecode(token);
+        if (decodedToken.exp * 1000 < Date.now()) {
+          localStorage.removeItem('token');
+          setIsAuthenticated(false);
+          setUserRole('');
+          setTokenExpiration(null);
+          alert("Please log in again because your session has ended.");
+        } else {
+          setIsAuthenticated(true);
+          setUserRole(decodedToken.role);
+          setTokenExpiration(decodedToken.exp);
+        }
+      } catch (err) {
+        // إذا التوكن غير صالح أو تالف
         localStorage.removeItem('token');
         setIsAuthenticated(false);
         setUserRole('');
         setTokenExpiration(null);
-        alert("login again please bacause your session is end");
-      } else {
-        setIsAuthenticated(true);
-        setUserRole(decodedToken.role);
-        setTokenExpiration(decodedToken.exp);
       }
     }
   }, []);
@@ -86,41 +96,65 @@ function App() {
         <Route path="/About" element={<About />} />
         <Route path="/Contact" element={<Contact />} />
         <Route path="/Gallery" element={<Gallery />} />
-        
+
+        {/* مسارات محمية - عرض فقط للمستخدمين المسجلين */}
         <Route 
           path="/generate-keywords" 
           element={
             isAuthenticated ? (
               <GenerateKeywords />
             ) : (
-              <Navigate to="/" />
+              <Navigate to="/" replace />
             )
           } 
         />
-
+            <Route 
+          path="/patients" 
+          element={
+            isAuthenticated ? (
+              <PatientsList/>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/add-patient" 
+          element={
+            isAuthenticated ? (
+              <AddPatient />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        
+        {/* صفحة الملف الشخصي - فقط للدكتور */}
         <Route 
           path="/user-profile" 
           element={
-            isAuthenticated && userRole === 'user' ? (
+            isAuthenticated && userRole === 'doctor' ? (
               <UserProfile />
             ) : (
-              <Navigate to="/" />
+              <Navigate to="/" replace />
             )
           } 
         />
 
+        {/* صفحة الأدمن */}
         <Route 
           path="/admin" 
           element={
             isAuthenticated && userRole === 'admin' ? (
               <AdminPage />
             ) : (
-              <Navigate to="/" />
+              <Navigate to="/" replace />
             )
           } 
         />
 
-        <Route path="*" element={<Navigate to="/" />} />
+        {/* إعادة توجيه لكل مسار غير معروف */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );
