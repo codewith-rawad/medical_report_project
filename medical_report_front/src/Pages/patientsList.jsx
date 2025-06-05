@@ -18,7 +18,7 @@ const PatientsList = () => {
     }
     setDoctorId(storedId);
 
-    // جلب المرضى المرتبطين بالطبيب
+
     fetch(`http://127.0.0.1:5000/api/patients?doctor_id=${storedId}`)
       .then(res => {
         if (!res.ok) throw new Error('Failed to fetch patients');
@@ -34,7 +34,7 @@ const PatientsList = () => {
   }, []);
 
   const handlePatientClick = (patient) => {
-    // تخزين بيانات المريض الحالي للانتقال للصفحة التفصيلية
+    
     localStorage.setItem('currentPatient', JSON.stringify(patient));
     navigate(`/patient/${patient._id}`);
   };

@@ -13,6 +13,7 @@ import Gallery from './Pages/Gallery';
 import GenerateKeywords from './Pages/generate_report';
 import AddPatient from './Pages/Patient';
 import PatientsList from './Pages/patientsList';
+import PatientDetail from './Pages/patientDetails';
 import "../src/App.css";
 
 function App() {
@@ -108,6 +109,18 @@ function App() {
             )
           } 
         />
+             <Route 
+          path="/patient/:patientId"
+          element={
+            isAuthenticated ? (
+              <PatientDetail />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+   
+
             <Route 
           path="/patients" 
           element={
