@@ -28,6 +28,7 @@ def create_app():
     from app.routes.Admin_route import admin_bp 
     from app.routes.models_route import ml_models_bp
     from app.routes.report_routes import generate_bp
+    from app.routes.extractInfo_routes import nlp_bp
     # from app.routes.report_routes import test
  
     
@@ -37,6 +38,7 @@ def create_app():
     app.register_blueprint(admin_bp, url_prefix="/api")  
     app.register_blueprint(ml_models_bp, url_prefix="/api")
     app.register_blueprint(generate_bp, url_prefix="/api")
+    app.register_blueprint(nlp_bp, url_prefix='/api/nlp')
     # app.register_blueprint(test, url_prefix="/api")
 
 
