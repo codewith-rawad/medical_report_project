@@ -8,6 +8,7 @@ import Back2 from '../assets/about2.jpg';
 import Background from '../Components/Background';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
+
 const GenerateKeywords = () => {
   const backgrounds = [Back1, Back2];
   const [image, setImage] = useState(null);

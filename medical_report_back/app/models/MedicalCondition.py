@@ -5,20 +5,27 @@ from bson import ObjectId
 class MedicalCondition:
     collection = mongo.db.conditions
 
-    def __init__(self, patient_id, image_url, report_url, story):
-        self.patient_id = patient_id
-        self.image_url = image_url
-        self.report_url = report_url
-        self.story = story
+    def __init__(self, patient_name, age, clinical_case, report_base64, image_base64, user_id):
+        self.patient_name = patient_name    
+        self.age = age                   
+        self.clinical_case = clinical_case   
+        self.report_base64 = report_base64   
+        self.image_base64 = image_base64    
+        self.user_id = user_id               
         self.created_at = datetime.utcnow()
 
     def save(self):
-        MedicalCondition.collection.insert_one(self.__dict__)
+        data = self.__dict__.copy()
+        if '_id' in data:
+            del data['_id']
+        MedicalCondition.collection.insert_one(data)
 
     @staticmethod
-    def get_by_patient(patient_id):
-        return list(MedicalCondition.collection.find({"patient_id": patient_id}))
+    def get_by_patient(patient_name):
+    
+        return list(MedicalCondition.collection.find({"patient_name": patient_name}))
 
     @staticmethod
     def delete_by_id(condition_id):
+
         return MedicalCondition.collection.delete_one({"_id": ObjectId(condition_id)})
