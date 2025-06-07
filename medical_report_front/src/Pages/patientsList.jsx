@@ -3,8 +3,12 @@ import { toast, ToastContainer } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import "../Styles/patientlist.css";
+import Background from '../Components/Background';
+import img1 from "../assets/background2.jpg"
+import img2 from "../assets/background.jpg"
 
 const PatientsList = () => {
+  const arr=[img1,img2]
   const navigate = useNavigate();
   const [doctorId, setDoctorId] = useState(null);
   const [patients, setPatients] = useState([]);
@@ -157,7 +161,7 @@ const PatientsList = () => {
           </div>
         </div>
       )}
-
+   <Background images={arr}/>
       <ToastContainer />
     </div>
   );
