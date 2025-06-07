@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
+import "../Styles/patient.css";
 
 const AddPatient = () => {
   const navigate = useNavigate();
@@ -65,12 +66,11 @@ const AddPatient = () => {
         return;
       }
 
-      const result = await res.json(); // assuming backend returns created patient
+      const result = await res.json();
       toast.success('Patient added successfully!', { position: "top-center" });
 
-      // حفظ بيانات المريض المضافة لاستخدامها في توليد التقرير
       localStorage.setItem('currentPatient', JSON.stringify(result));
-      setPatientCreated(true); // إظهار الزر بعد النجاح
+      setPatientCreated(true);
       setPatientData({ name: '', age: '', address: '', medicalCases: [] });
 
     } catch (error) {
@@ -84,38 +84,49 @@ const AddPatient = () => {
   };
 
   return (
-    <div className="page-container">
-      <h2>Add New Patient</h2>
-      <form onSubmit={handleSubmit} className="form-container">
-        <label>Name:</label>
+    <div className="addPatient-page-container">
+      <h2 className="addPatient-title">Add New Patient</h2>
+      <form onSubmit={handleSubmit} className="addPatient-form-container">
+        <label className="addPatient-label">Name:</label>
         <input
           type="text"
           name="name"
           value={patientData.name}
           onChange={handleChange}
+          className="addPatient-input"
           required
         />
 
-        <label>Age:</label>
+        <label className="addPatient-label">Age:</label>
         <input
           type="number"
           name="age"
           value={patientData.age}
           onChange={handleChange}
+          className="addPatient-input"
           required
         />
 
-        <label>Address:</label>
+        <label className="addPatient-label">Address:</label>
         <input
           type="text"
           name="address"
           value={patientData.address}
           onChange={handleChange}
+          className="addPatient-input"
         />
 
-        <button type="submit" className="save-btn">Add Patient</button>
+        <button type="submit" className="addPatient-save-btn">Add Patient</button>
       </form>
 
+      {patientCreated && (
+        <button 
+          className="addPatient-report-btn" 
+          onClick={handleGenerateReport}
+        >
+          Generate Report
+        </button>
+      )}
 
       <ToastContainer />
     </div>
