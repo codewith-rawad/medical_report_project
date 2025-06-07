@@ -1,0 +1,133 @@
+.medical-conditions-container {
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+  color: #222;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #003f5c;
+}
+
+.search-filters {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.search-filters input[type="text"] {
+  width: 300px;
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+.search-filters button {
+  padding: 8px 18px;
+  background-color: #004e64;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.search-filters button:hover {
+  background-color: #003f5c;
+}
+
+.loading-text,
+.no-conditions-text {
+  text-align: center;
+  font-size: 18px;
+  color: #666;
+}
+
+.conditions-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.condition-item {
+  background: white;
+  padding: 20px;
+  margin-bottom: 18px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+.condition-item h3 {
+  margin-bottom: 10px;
+  color: #004e64;
+}
+
+.condition-item p {
+  margin: 6px 0;
+  line-height: 1.5;
+  font-size: 15px;
+}
+
+.report-text {
+  background-color: #eef6f8;
+  padding: 15px;
+  border-radius: 6px;
+  font-family: 'Courier New', Courier, monospace;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 14px;
+  color: #333;
+  margin-top: 6px;
+}
+
+.condition-image {
+  display: block;
+  max-width: 300px;
+  margin-top: 15px;
+  border-radius: 6px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+}
+
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 25px;
+}
+
+.pagination-button {
+  background-color: #004e64;
+  color: white;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 15px;
+  transition: background-color 0.3s ease;
+}
+
+.pagination-button:disabled {
+  background-color: #a3bcc9;
+  cursor: not-allowed;
+}
+
+.pagination-button:not(:disabled):hover {
+  background-color: #003f5c;
+}
+
+.page-info {
+  font-size: 16px;
+  font-weight: 600;
+  color: #003f5c;
+}

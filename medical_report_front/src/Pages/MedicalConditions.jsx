@@ -1,33 +1,40 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const MedicalConditions = ({ userId }) => {
+const MedicalConditions = () => {
+  const { patientId } = useParams();
   const [conditions, setConditions] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [searchPatient, setSearchPatient] = useState('');
   const [searchCase, setSearchCase] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const limit = 4;
 
   const fetchConditions = () => {
+    if (!patientId) {
+      toast.error('Patient ID is missing!', { position: 'top-center' });
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     const params = new URLSearchParams({
-      user_id: userId,
-      patient_name: searchPatient,
+      patient_id: patientId,
       clinical_case: searchCase,
       page,
       limit
     });
+
     fetch(`http://127.0.0.1:5000/api/conditions?${params.toString()}`)
       .then(res => {
         if (!res.ok) throw new Error('Failed to fetch conditions');
         return res.json();
       })
       .then(data => {
-        setConditions(data.conditions);
-        setTotalPages(data.total_pages);
+        setConditions(data.conditions || []);
+        setTotalPages(data.total_pages || 1);
       })
       .catch(err => toast.error(err.message, { position: 'top-center' }))
       .finally(() => setLoading(false));
@@ -35,40 +42,19 @@ const MedicalConditions = ({ userId }) => {
 
   useEffect(() => {
     fetchConditions();
-  }, [page]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, searchCase, patientId]);
 
   const handleSearch = () => {
     setPage(1);
     fetchConditions();
   };
 
-  const handleDelete = (id) => {
-    if (!window.confirm("Are you sure you want to delete this condition?")) return;
-    fetch(`http://127.0.0.1:5000/api/conditions/${id}`, { method: 'DELETE' })
-      .then(res => {
-        if (!res.ok) throw new Error('Failed to delete condition');
-        return res.json();
-      })
-      .then(data => {
-        toast.success(data.message || 'Deleted successfully', { position: 'top-center' });
-        // إعادة جلب البيانات مع تحديث الصفحة الحالية أو الرجوع إذا كانت الصفحة أصبحت فارغة
-        if (conditions.length === 1 && page > 1) setPage(page - 1);
-        else fetchConditions();
-      })
-      .catch(err => toast.error(err.message, { position: 'top-center' }));
-  };
-
   return (
     <div className="medical-conditions-container">
-      <h2>Medical Conditions</h2>
+      <h2>Medical Conditions for Patient ID: {patientId}</h2>
 
       <div className="search-filters">
-        <input
-          type="text"
-          placeholder="Search by patient name"
-          value={searchPatient}
-          onChange={e => setSearchPatient(e.target.value)}
-        />
         <input
           type="text"
           placeholder="Search by clinical case"
@@ -79,44 +65,48 @@ const MedicalConditions = ({ userId }) => {
       </div>
 
       {loading ? (
-        <p>Loading...</p>
+        <p className="loading-text">Loading...</p>
       ) : conditions.length === 0 ? (
-        <p>No medical conditions found.</p>
+        <p className="no-conditions-text">No medical conditions found.</p>
       ) : (
         <>
           <ul className="conditions-list">
             {conditions.map(cond => (
               <li key={cond._id} className="condition-item">
                 <h3>{cond.patient_name} (Age: {cond.age})</h3>
-                <p><b>Clinical Case:</b> {cond.clinical_case}</p>
-                <p><b>Report:</b></p>
-                <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{cond.report_base64}</pre>
+                <p><strong>Clinical Case:</strong> {cond.clinical_case}</p>
+                <p><strong>Report:</strong></p>
+                <pre className="report-text">{cond.report_base64}</pre>
                 {cond.image_base64 && (
                   <img
                     src={`data:image/jpeg;base64,${cond.image_base64}`}
                     alt="Medical"
-                    style={{ maxWidth: '300px', marginTop: '10px' }}
+                    className="condition-image"
                   />
                 )}
-                <button onClick={() => handleDelete(cond._id)} className="delete-btn">
-                  Delete
-                </button>
               </li>
             ))}
           </ul>
 
           <div className="pagination-controls">
-            <button onClick={() => page > 1 && setPage(page - 1)} disabled={page === 1}>
+            <button
+              onClick={() => page > 1 && setPage(page - 1)}
+              disabled={page === 1}
+              className="pagination-button"
+            >
               Prev
             </button>
-            <span>Page {page} of {totalPages}</span>
-            <button onClick={() => page < totalPages && setPage(page + 1)} disabled={page === totalPages}>
+            <span className="page-info">Page {page} of {totalPages}</span>
+            <button
+              onClick={() => page < totalPages && setPage(page + 1)}
+              disabled={page === totalPages}
+              className="pagination-button"
+            >
               Next
             </button>
           </div>
         </>
       )}
-
       <ToastContainer />
     </div>
   );

@@ -83,7 +83,7 @@ const PatientsList = () => {
   };
 
   const handleAddCase = (patientId) => {
-    navigate(`/add-case/${patientId}`);
+    navigate(`/patient/${patientId}`);
   };
 
   const handleViewCases = (patientId) => {

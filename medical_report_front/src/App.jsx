@@ -14,6 +14,7 @@ import GenerateKeywords from './Pages/generate_report';
 import AddPatient from './Pages/Patient';
 import PatientsList from './Pages/patientsList';
 import PatientDetail from './Pages/patientDetails';
+import MedicalConditions from './Pages/MedicalConditions';
 import "../src/App.css";
 
 function App() {
@@ -126,6 +127,18 @@ function App() {
           element={
             isAuthenticated ? (
               <PatientsList/>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+  
+
+        <Route 
+        path="/patient-cases/:patientId" 
+          element={
+            isAuthenticated ? (
+              <MedicalConditions/>
             ) : (
               <Navigate to="/" replace />
             )

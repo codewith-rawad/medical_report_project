@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import '../Styles/generate_report.css';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom'; // useParams لاستقبال patientId من رابط URL
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
@@ -23,17 +23,16 @@ const GenerateKeywords = () => {
   const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
 
   const navigate = useNavigate();
+  const { patientId } = useParams();  // استلام patientId من رابط URL
 
   useEffect(() => {
-    // تحقق من دعم المتصفح للتعرف على الصوت
     if (!browserSupportsSpeechRecognition) {
       toast.error('Your browser does not support speech recognition.');
     }
 
-    // التحقق من وجود المستخدم في localStorage
     const storedUser = localStorage.getItem('user');
     if (!storedUser) {
-      navigate('/'); // إذا لم يوجد مستخدم، أعد التوجيه للصفحة الرئيسية
+      navigate('/'); 
       return;
     }
     try {
@@ -44,7 +43,6 @@ const GenerateKeywords = () => {
         setUserId(parsedUser._id);
       }
     } catch (err) {
-      // خطأ في قراءة البيانات => إعادة التوجيه
       navigate('/');
     }
   }, [navigate, browserSupportsSpeechRecognition]);
@@ -55,7 +53,6 @@ const GenerateKeywords = () => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        // نحصل على النص بعد الفاصلة لفصل "data:image/..."
         const base64data = reader.result.split(',')[1];
         setImageBase64(base64data);
       };
@@ -167,6 +164,7 @@ const GenerateKeywords = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           user_id: userId,
+          patient_id: patientId,  // إرسال patientId هنا
           keywords,
           transcript,
           patient_name: patientName,
@@ -215,8 +213,8 @@ const GenerateKeywords = () => {
   };
 
   const handleSaveCase = async () => {
-    if (!patientName.trim()) {
-      toast.error('Patient name is required to save.', { position: 'top-center' });
+    if (!patientId) {
+      toast.error('Patient ID is required to save.', { position: 'top-center' });
       return;
     }
     if (!report) {
@@ -239,6 +237,7 @@ const GenerateKeywords = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          patient_id: patientId,  // استخدم patientId هنا
           patient_name: patientName,
           age,
           clinical_case: clinicalCase,
@@ -260,7 +259,6 @@ const GenerateKeywords = () => {
     }
   };
 
-  // لا تعرض المحتوى إذا لم يكن المستخدم معرفًا (قيد التحقق)
   if (!userId) {
     return <div>Loading or Redirecting...</div>;
   }
@@ -296,30 +294,34 @@ const GenerateKeywords = () => {
             />
             ResNet
           </label>
+          <label>
+            <input
+              type="checkbox"
+              value="densenet"
+              checked={selectedModels.includes('densenet')}
+              onChange={handleModelChange}
+            />
+            DenseNet
+          </label>
         </fieldset>
 
         <button type="submit" disabled={loading}>
-          {loading ? 'Extracting...' : 'Extract Keywords'}
+          {loading ? 'Extracting Keywords...' : 'Extract Keywords'}
         </button>
       </form>
 
-      <div>
-        <h3>Extracted Keywords:</h3>
-        <ul>
-          {keywords.map((k, i) => (
-            <li key={i}>{k}</li>
-          ))}
-        </ul>
-      </div>
-
-      <div>
+      <div className="patient-info-section">
         <h3>Patient Information</h3>
+        <label>
+          Patient ID (from URL): <strong>{patientId || 'N/A'}</strong>
+        </label>
         <label>
           Name:
           <input
             type="text"
             value={patientName}
             onChange={(e) => setPatientName(e.target.value)}
+            placeholder="Enter patient name"
             required
           />
         </label>
@@ -329,6 +331,7 @@ const GenerateKeywords = () => {
             type="number"
             value={age}
             onChange={(e) => setAge(e.target.value)}
+            placeholder="Enter age"
             required
           />
         </label>
@@ -337,55 +340,62 @@ const GenerateKeywords = () => {
           <textarea
             value={clinicalCase}
             onChange={(e) => setClinicalCase(e.target.value)}
-            required
+            placeholder="Enter clinical case or use voice input"
+            rows={4}
           />
         </label>
 
-        <div>
+        <div className="voice-control-buttons">
           <button type="button" onClick={startListening} disabled={listening}>
-            Start Recording Clinical Case
+            Start Voice Input
           </button>
           <button type="button" onClick={stopListening} disabled={!listening}>
-            Stop Recording & Extract Info
+            Stop Voice Input
           </button>
-          <p>{listening ? 'Listening...' : 'Not listening'}</p>
-          <p>Transcript: {transcript}</p>
         </div>
       </div>
 
-      <div>
+      <div className="keywords-section">
+        <h3>Extracted Keywords</h3>
+        {keywords.length === 0 ? (
+          <p>No keywords extracted yet.</p>
+        ) : (
+          <ul>
+            {keywords.map((kw, idx) => (
+              <li key={idx}>{kw}</li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <div className="report-section">
         <button onClick={handleGenerateReport} disabled={loading}>
-          {loading ? 'Generating Report...' : 'Generate Medical Report'}
+          {loading ? 'Generating Report...' : 'Generate Report'}
         </button>
-      </div>
 
-      {report && (
-        <div>
-          <h3>Generated Report</h3>
-          <textarea
-            rows="10"
-            cols="80"
-            readOnly
-            value={report}
-            style={{ whiteSpace: 'pre-wrap' }}
-          />
-          <div>
-            {docxBase64 && (
-              <button onClick={() => downloadDocxFromBase64(docxBase64, `${patientName}_report.docx`)}>
-                Download Word Report
+        {report && (
+          <>
+            <h3>Medical Report</h3>
+            <textarea value={report} readOnly rows={10} />
+            <div className="download-buttons">
+              <button
+                onClick={() => downloadDocxFromBase64(docxBase64, `${patientId}_report.docx`)}
+              >
+                Download Word (.docx)
               </button>
-            )}
-            {pdfBase64 && (
-              <button onClick={() => downloadPdfFromBase64(pdfBase64, `${patientName}_report.pdf`)}>
-                Download PDF Report
+              <button
+                onClick={() => downloadPdfFromBase64(pdfBase64, `${patientId}_report.pdf`)}
+              >
+                Download PDF
               </button>
-            )}
-          </div>
-          <button onClick={handleSaveCase} disabled={loading}>
-            {loading ? 'Saving...' : 'Save Medical Case'}
-          </button>
-        </div>
-      )}
+            </div>
+
+            <button onClick={handleSaveCase} disabled={loading}>
+              {loading ? 'Saving...' : 'Save Medical Case'}
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
 };
