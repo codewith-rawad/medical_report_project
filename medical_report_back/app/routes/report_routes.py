@@ -22,19 +22,23 @@ def generate_report():
     data = request.get_json()
     user_id = data.get("user_id")
     keywords = data.get("keywords")
+    transcript = data.get("transcript")  # استقبال الترانسبيت
 
-    if not user_id or not keywords:
-        return jsonify({"error": "User ID and keywords are required"}), 400
+    if not user_id or not keywords or not transcript:
+        return jsonify({"error": "User ID, keywords, and transcript are required"}), 400
 
     user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
     if not user:
         return jsonify({"error": "User not found"}), 404
     user_name = user.get("name", "Unknown User")
 
+    # دمج transcript مع keywords في prompt
     prompt = (
         "You are a professional radiologist. Based on the following medical keywords extracted from a chest X-ray:\n\n"
         + ", ".join(keywords) +
-        "\n\nWrite a concise medical interpretation minimum(100 word), explaining the findings and suggesting appropriate medications or treatments if applicable. Focus only on clinical relevance. Avoid any disclaimers, introductions, or conversational language."
+        "\n\nAnd the patient's spoken transcript describing symptoms and history:\n"
+        f"{transcript}\n\n"
+        "Write a concise medical interpretation minimum 100 words, explaining the findings and suggesting appropriate medications or treatments if applicable. Focus only on clinical relevance. Avoid any disclaimers, introductions, or conversational language."
     )
 
     pythoncom.CoInitialize()
@@ -57,15 +61,12 @@ def generate_report():
 
             doc.save(docx_path)
 
-            # تحويل ملف Word إلى PDF
             convert(docx_path, pdf_path)
 
-           
             with open(docx_path, "rb") as f_docx:
                 word_bytes = f_docx.read()
             word_base64 = base64.b64encode(word_bytes).decode("utf-8")
 
-           
             with open(pdf_path, "rb") as f_pdf:
                 pdf_bytes = f_pdf.read()
             pdf_base64 = base64.b64encode(pdf_bytes).decode("utf-8")

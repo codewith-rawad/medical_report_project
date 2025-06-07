@@ -3,18 +3,15 @@ import '../Styles/generate_report.css';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Back1 from '../assets/about1.avif';
-import Back2 from '../assets/about2.jpg';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
 const GenerateKeywords = () => {
-  // حالات State
   const [image, setImage] = useState(null);
   const [imageBase64, setImageBase64] = useState('');
   const [selectedModels, setSelectedModels] = useState([]);
   const [keywords, setKeywords] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [userId, setUserId] = useState('');
+  const [userId, setUserId] = useState(null);
   const [report, setReport] = useState('');
   const [docxBase64, setDocxBase64] = useState(null);
   const [pdfBase64, setPdfBase64] = useState(null);
@@ -28,41 +25,57 @@ const GenerateKeywords = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // تحقق من دعم المتصفح للتعرف على الصوت
     if (!browserSupportsSpeechRecognition) {
       toast.error('Your browser does not support speech recognition.');
     }
 
+    // التحقق من وجود المستخدم في localStorage
     const storedUser = localStorage.getItem('user');
     if (!storedUser) {
+      navigate('/'); // إذا لم يوجد مستخدم، أعد التوجيه للصفحة الرئيسية
+      return;
+    }
+    try {
+      const parsedUser = JSON.parse(storedUser);
+      if (!parsedUser._id) {
+        navigate('/');
+      } else {
+        setUserId(parsedUser._id);
+      }
+    } catch (err) {
+      // خطأ في قراءة البيانات => إعادة التوجيه
       navigate('/');
-    } else {
-      const parsed = JSON.parse(storedUser);
-      if (!parsed._id) navigate('/');
-      else setUserId(parsed._id);
     }
   }, [navigate, browserSupportsSpeechRecognition]);
 
-  // لتحويل الصورة المرفوعة إلى Base64 فور اختيارها
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setImage(file);
-
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImageBase64(reader.result.split(',')[1]); // خزن فقط بيانات base64 بدون data:image/...
-    };
     if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        // نحصل على النص بعد الفاصلة لفصل "data:image/..."
+        const base64data = reader.result.split(',')[1];
+        setImageBase64(base64data);
+      };
       reader.readAsDataURL(file);
+    } else {
+      setImageBase64('');
     }
   };
 
   const startListening = () => {
     resetTranscript();
-    SpeechRecognition.startListening({ continuous: false, language: 'en-US' });
+    SpeechRecognition.startListening({ continuous: true, language: 'en-US' });
   };
 
   const stopListening = async () => {
     SpeechRecognition.stopListening();
+    if (!transcript.trim()) {
+      toast.error('No speech detected to parse.');
+      return;
+    }
     try {
       const response = await fetch('http://127.0.0.1:5000/api/parse_patient_info', {
         method: 'POST',
@@ -93,8 +106,17 @@ const GenerateKeywords = () => {
 
   const handleExtract = async (e) => {
     e.preventDefault();
-    if (!image || selectedModels.length === 0) {
-      toast.error('Please upload an image and select at least one model.', { position: 'top-center' });
+    if (!image) {
+      toast.error('Please upload an image.', { position: 'top-center' });
+      return;
+    }
+    if (selectedModels.length === 0) {
+      toast.error('Please select at least one model.', { position: 'top-center' });
+      return;
+    }
+    if (!userId) {
+      toast.error('User not authenticated. Please login again.', { position: 'top-center' });
+      navigate('/');
       return;
     }
 
@@ -128,8 +150,13 @@ const GenerateKeywords = () => {
       toast.error('No keywords extracted yet.', { position: 'top-center' });
       return;
     }
-    if (!patientName || !age || !clinicalCase) {
+    if (!patientName.trim() || !age || !clinicalCase.trim()) {
       toast.error('Please fill patient info and clinical case.', { position: 'top-center' });
+      return;
+    }
+    if (!userId) {
+      toast.error('User not authenticated. Please login again.', { position: 'top-center' });
+      navigate('/');
       return;
     }
 
@@ -141,6 +168,7 @@ const GenerateKeywords = () => {
         body: JSON.stringify({
           user_id: userId,
           keywords,
+          transcript,
           patient_name: patientName,
           age,
           clinical_case: clinicalCase,
@@ -162,7 +190,6 @@ const GenerateKeywords = () => {
     }
   };
 
-  // دوال تحميل الملفات من base64 (كما في كودك الأصلي)
   const downloadDocxFromBase64 = (base64String, filename) => {
     if (!base64String) {
       toast.error('No Word document available for download.', { position: 'top-center' });
@@ -187,9 +214,8 @@ const GenerateKeywords = () => {
     downloadLink.click();
   };
 
-  // هنا نرسل بيانات الحالة كاملة كـ JSON مع صورة مرفوعة مسبقاً بصيغة base64
   const handleSaveCase = async () => {
-    if (!patientName) {
+    if (!patientName.trim()) {
       toast.error('Patient name is required to save.', { position: 'top-center' });
       return;
     }
@@ -201,7 +227,13 @@ const GenerateKeywords = () => {
       toast.error('Image is required to save.', { position: 'top-center' });
       return;
     }
+    if (!userId) {
+      toast.error('User not authenticated. Please login again.', { position: 'top-center' });
+      navigate('/');
+      return;
+    }
 
+    setLoading(true);
     try {
       const response = await fetch('http://127.0.0.1:5000/api/conditions', {
         method: 'POST',
@@ -223,8 +255,15 @@ const GenerateKeywords = () => {
       }
     } catch {
       toast.error('Server connection failed.', { position: 'top-center' });
+    } finally {
+      setLoading(false);
     }
   };
+
+  // لا تعرض المحتوى إذا لم يكن المستخدم معرفًا (قيد التحقق)
+  if (!userId) {
+    return <div>Loading or Redirecting...</div>;
+  }
 
   return (
     <div className="generate-report-container">
@@ -257,7 +296,6 @@ const GenerateKeywords = () => {
             />
             ResNet
           </label>
-          {/* أضف المزيد حسب الحاجة */}
         </fieldset>
 
         <button type="submit" disabled={loading}>
@@ -308,28 +346,46 @@ const GenerateKeywords = () => {
             Start Recording Clinical Case
           </button>
           <button type="button" onClick={stopListening} disabled={!listening}>
-            Stop Recording
+            Stop Recording & Extract Info
           </button>
+          <p>{listening ? 'Listening...' : 'Not listening'}</p>
           <p>Transcript: {transcript}</p>
         </div>
       </div>
 
-      <button onClick={handleGenerateReport} disabled={loading || keywords.length === 0}>
-        {loading ? 'Generating Report...' : 'Generate Report'}
-      </button>
+      <div>
+        <button onClick={handleGenerateReport} disabled={loading}>
+          {loading ? 'Generating Report...' : 'Generate Medical Report'}
+        </button>
+      </div>
 
       {report && (
         <div>
-          <h3>Generated Report:</h3>
-          <pre style={{ whiteSpace: 'pre-wrap' }}>{report}</pre>
-          <button onClick={() => downloadDocxFromBase64(docxBase64, 'report.docx')}>Download Word</button>
-          <button onClick={() => downloadPdfFromBase64(pdfBase64, 'report.pdf')}>Download PDF</button>
+          <h3>Generated Report</h3>
+          <textarea
+            rows="10"
+            cols="80"
+            readOnly
+            value={report}
+            style={{ whiteSpace: 'pre-wrap' }}
+          />
+          <div>
+            {docxBase64 && (
+              <button onClick={() => downloadDocxFromBase64(docxBase64, `${patientName}_report.docx`)}>
+                Download Word Report
+              </button>
+            )}
+            {pdfBase64 && (
+              <button onClick={() => downloadPdfFromBase64(pdfBase64, `${patientName}_report.pdf`)}>
+                Download PDF Report
+              </button>
+            )}
+          </div>
+          <button onClick={handleSaveCase} disabled={loading}>
+            {loading ? 'Saving...' : 'Save Medical Case'}
+          </button>
         </div>
       )}
-
-      <button onClick={handleSaveCase} disabled={loading}>
-        Save Case
-      </button>
     </div>
   );
 };

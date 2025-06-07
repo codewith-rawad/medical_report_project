@@ -1,10 +1,9 @@
 from flask import Blueprint, request, jsonify
 import google.generativeai as genai
-
+import json
 
 nlp_bp = Blueprint('nlp', __name__)
 
-# إعداد Gemini
 genai.configure(api_key="AIzaSyDzLEvTu38M9E67pG5crEvYVSy04mO2NGM")
 gemini_model = genai.GenerativeModel("gemini-1.5-flash")
 
@@ -36,15 +35,23 @@ def parse_patient_info():
         response = gemini_model.generate_content(prompt)
         content = response.text.strip()
 
-        # تحويل النص الناتج إلى JSON
-        try:
-            # تنظيف النص أولًا (لو فيه ```json أو شيء زائد)
-            cleaned_json = content.replace("```json", "").replace("```", "").strip()
-            parsed = eval(cleaned_json)  # نفترض أن Gemini يرجع تنسيق JSON صحيح
-        except Exception as json_error:
-            return jsonify({"error": "Gemini response is not valid JSON", "raw": content}), 500
+        # تنظيف النص أولًا من علامات Markdown
+        cleaned_json = content.replace("```json", "").replace("```", "").strip()
+
+        # محاولة تحويل النص إلى JSON
+        parsed = json.loads(cleaned_json)
+
+        # تحويل العمر إلى int إذا كان موجود وصالح
+        if parsed.get("age"):
+            try:
+                parsed["age"] = int(parsed["age"])
+            except (ValueError, TypeError):
+                pass  # اتركها كما هي لو لم تستطع التحويل
 
         return jsonify(parsed), 200
+
+    except json.JSONDecodeError:
+        return jsonify({"error": "Gemini response is not valid JSON", "raw": content}), 500
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

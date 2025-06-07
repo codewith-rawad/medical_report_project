@@ -16,7 +16,7 @@
     background-color: #005f73;
     border-radius: 15px;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-    padding: 25px;
+    padding: 30px;
     width: 70%;
     position: relative;
     margin-bottom: 30px;
@@ -294,7 +294,7 @@ background-color: #f06292 !important;
   
   
   .first,
-  .second {
+  .second,.third {
     display: flex;
     justify-content: space-between;
     margin-top: 15px;

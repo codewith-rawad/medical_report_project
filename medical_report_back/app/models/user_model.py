@@ -6,7 +6,7 @@ from bson import ObjectId
 class User:
     collection = mongo.db.users
 
-    def __init__(self, name, email, password, role="doctor", phone=None, address=None, profile_pic=None, age=None, specialty=None):
+    def __init__(self, name, email, password, role=None, phone=None, address=None, profile_pic=None, age=None, specialty=None):
         self.name = name
         self.email = email
         self.password = password
