@@ -4,8 +4,12 @@ import { useNavigate, useParams } from 'react-router-dom'; // useParams لاست
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
-
+import "../Styles/patientDetails.css"
+import back1 from "../assets/background.jpg"
+import back2 from "../assets/background2.jpg"
+import Background from '../Components/Background';
 const GenerateKeywords = () => {
+  const arry=[back1,back2];
   const [image, setImage] = useState(null);
   const [imageBase64, setImageBase64] = useState('');
   const [selectedModels, setSelectedModels] = useState([]);
@@ -264,9 +268,9 @@ const GenerateKeywords = () => {
   }
 
   return (
-    <div className="generate-report-container">
+    <div className="generate-report-containerr">
       <ToastContainer />
-      <h2>Generate Medical Report</h2>
+      <h2 className='titlee'>Generate Medical Report</h2>
 
       <form onSubmit={handleExtract}>
         <label>
@@ -309,11 +313,23 @@ const GenerateKeywords = () => {
           {loading ? 'Extracting Keywords...' : 'Extract Keywords'}
         </button>
       </form>
+      <div className="keywords-section">
+        <h3>Extracted Keywords</h3>
+        {keywords.length === 0 ? (
+          <p>No keywords extracted yet.</p>
+        ) : (
+          <ul>
+            {keywords.map((kw, idx) => (
+              <li key={idx}>{kw}</li>
+            ))}
+          </ul>
+        )}
+      </div>
 
       <div className="patient-info-section">
         <h3>Patient Information</h3>
         <label>
-          Patient ID (from URL): <strong>{patientId || 'N/A'}</strong>
+       
         </label>
         <label>
           Name:
@@ -355,18 +371,7 @@ const GenerateKeywords = () => {
         </div>
       </div>
 
-      <div className="keywords-section">
-        <h3>Extracted Keywords</h3>
-        {keywords.length === 0 ? (
-          <p>No keywords extracted yet.</p>
-        ) : (
-          <ul>
-            {keywords.map((kw, idx) => (
-              <li key={idx}>{kw}</li>
-            ))}
-          </ul>
-        )}
-      </div>
+      
 
       <div className="report-section">
         <button onClick={handleGenerateReport} disabled={loading}>
@@ -396,6 +401,7 @@ const GenerateKeywords = () => {
           </>
         )}
       </div>
+      <Background images={arry}/>
     </div>
   );
 };

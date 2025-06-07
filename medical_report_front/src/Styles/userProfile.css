@@ -349,4 +349,110 @@ background-color: #f06292 !important;
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
-  
+  /* خلفية شفافة تغطي الشاشة كلها */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6); /* خلفية داكنة شفافة */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* مربع المحتوى الأبيض */
+.popup-content {
+  background-color: #ffffff;
+  padding: 25px 30px;
+  border-radius: 10px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  position: relative;
+  animation: popupFadeIn 0.3s ease forwards;
+}
+
+/* تأثير ظهور ناعم */
+@keyframes popupFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* عنوان البوب اب */
+.popup-content h2 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+  color: #003f5c; /* لون عميق جميل */
+  text-align: center;
+}
+
+/* الحقول النصية */
+.popup-content label {
+  display: block;
+  margin-top: 15px;
+  font-weight: 600;
+  color: #004e64;
+}
+
+.popup-content input,
+.popup-content textarea {
+  width: 100%;
+  padding: 8px 12px;
+  margin-top: 5px;
+  border: 1.5px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.popup-content input:focus,
+.popup-content textarea:focus {
+  border-color: #003f5c;
+  outline: none;
+}
+
+/* أزرار الحفظ والإلغاء */
+.popup-content .save-btn,
+.popup-content .cancel-btn {
+  margin-top: 20px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.popup-content .save-btn {
+  background-color: #003f5c;
+  color: white;
+  margin-right: 10px;
+}
+
+.popup-content .save-btn:hover {
+  background-color: #002a3a;
+}
+
+.popup-content .cancel-btn {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.popup-content .cancel-btn:hover {
+  background-color: #c2c2c2;
+}
+
+button:hover{
+  background-color: #0a9396 !important;
+}

@@ -11,7 +11,7 @@
   margin-bottom: 20px;
   font-size: 2rem;
   font-weight: 700;
-  color: #004e64;
+  color: #ffffff;
 }
 
 /* بحث */
@@ -40,12 +40,13 @@
   padding: 0;
   margin: 0 0 30px 0;
   list-style: none;
+  margin-left: 40px;
 }
 
 /* بطاقات المرضى */
 .patientlist-item {
   flex: 0 0 220px;
-  background: white;
+  background:  #a0bcc4;
   border: 2px solid #004e64;
   border-radius: 15px;
   padding: 20px 15px;

@@ -1,67 +1,63 @@
-
-
 .addPatient-page-container {
-
-  max-width: 420px;
-  margin: 40px auto;
-  padding: 25px 30px;
-  background: linear-gradient(135deg, #2c373f, #3282b8);
-  border-radius: 15px;
-  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
-  color: #f0f0f0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 420px !important;
+  margin: 40px auto !important;
+  padding: 25px 30px !important;
+  background: linear-gradient(135deg, #2c373f, #3282b8) !important;
+  border-radius: 15px !important;
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3) !important;
+  color: #f0f0f0 !important;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
 }
 
 .addPatient-title {
-  text-align: center;
-  font-size: 1.9rem;
-  margin-bottom: 40px;
-  letter-spacing: 1.3px;
-  font-weight: 1000;
-  color: #bbe1fa;
-
+  text-align: center !important;
+  font-size: 1.9rem !important;
+  margin-bottom: 40px !important;
+  letter-spacing: 1.3px !important;
+  font-weight: 1000 !important;
+  color: #bbe1fa !important;
 }
 
 .addPatient-form-container {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  height: auto;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+  height: auto !important;
 }
 
 .addPatient-label {
-  font-weight: 600;
-  font-size: 1.05rem;
-  margin-bottom: 6px;
-  user-select: none;
+  font-weight: 600 !important;
+  font-size: 1.05rem !important;
+  margin-bottom: 6px !important;
+  user-select: none !important;
 }
 
 .addPatient-input {
-  padding: 11px 15px;
-  font-size: 1rem;
-  border-radius: 10px;
-  border: none;
-  outline: none;
-  transition: box-shadow 0.3s ease;
-  background-color: #bbe1fa;
-  color: #3c6cac;
-  font-weight: 600;
+  padding: 11px 15px !important;
+  font-size: 1rem !important;
+  border-radius: 10px !important;
+  border: none !important;
+  outline: none !important;
+  transition: box-shadow 0.3s ease !important;
+  background-color: #bbe1fa !important;
+  color: #3c6cac !important;
+  font-weight: 600 !important;
 }
-
 
 .addPatient-save-btn {
-  margin-top: 20px;
-  padding: 13px 0;
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: #ffffff;
-  background: #32b853;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: background 0.35s ease;
-  box-shadow: 0 6px 15px #023e8a;
+  margin-top: 20px !important;
+  padding: 13px 0 !important;
+  font-size: 1.15rem !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  background: #32b853 !important;
+  border: none !important;
+  border-radius: 12px !important;
+  cursor: pointer !important;
+  transition: background 0.35s ease !important;
+  box-shadow: 0 6px 15px #023e8a !important;
 }
 
-
-
+/* label{
+  color: wheat !important;
+} */

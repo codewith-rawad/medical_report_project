@@ -8,6 +8,7 @@ import img1 from"../assets/background2.jpg"
 import img2 from "../assets/background.jpg"
 import Background from '../Components/Background';
 
+
 const AddPatient = () => {
   const arry=[img1,img2]
   const navigate = useNavigate();
