@@ -162,7 +162,7 @@ const UserProfile = () => {
 
 
 
-  <button className="view-patients-btn" onClick={() => navigate('/patients')}>
+  <button className="my-report-btn" onClick={() => navigate('/patients')}>
     View Patients
   </button>
 

@@ -117,14 +117,6 @@ const AddPatient = () => {
       </form>
 
 
-      {patientCreated && (
-        <div style={{ marginTop: '20px', textAlign: 'center', color:"black" }}>
-          <button className="generate_report" onClick={handleGenerateReport}>
-            Generate Report messi
-          </button>
-        </div>
-      )}
-
       <ToastContainer />
     </div>
   );
