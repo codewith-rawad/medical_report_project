@@ -4,8 +4,12 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 import "../Styles/patient.css";
+import img1 from"../assets/background2.jpg"
+import img2 from "../assets/background.jpg"
+import Background from '../Components/Background';
 
 const AddPatient = () => {
+  const arry=[img1,img2]
   const navigate = useNavigate();
   const [doctorId, setDoctorId] = useState(null);
   const [patientData, setPatientData] = useState({
@@ -119,16 +123,10 @@ const AddPatient = () => {
         <button type="submit" className="addPatient-save-btn">Add Patient</button>
       </form>
 
-      {patientCreated && (
-        <button 
-          className="addPatient-report-btn" 
-          onClick={handleGenerateReport}
-        >
-          Generate Report
-        </button>
-      )}
+    
 
       <ToastContainer />
+      <Background images={arry}/>
     </div>
   );
 };
